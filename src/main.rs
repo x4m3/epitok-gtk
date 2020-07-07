@@ -1,27 +1,53 @@
-use gio::prelude::*;
-use gtk::prelude::*;
+use gtk::*;
 
 const PROGRAM_NAME: &str = "epitok";
-const APPLICATION_ID: &str = "com.philippeloctaux.epitok";
 
-fn build_ui(app: &gtk::Application) {
-    let application_window = gtk::ApplicationWindow::new(app);
+pub struct App {
+    pub window: Window,
+    pub header: Header,
+}
 
-    application_window.set_title(PROGRAM_NAME);
-    application_window.set_border_width(10);
-    application_window.set_position(gtk::WindowPosition::Center);
-    application_window.set_default_size(1024, 600);
+pub struct Header {
+    pub container: HeaderBar,
+}
 
-    application_window.show_all();
+impl App {
+    fn new() -> App {
+        let window = Window::new(gtk::WindowType::Toplevel);
+        let header = Header::new();
+
+        window.set_titlebar(Some(&header.container));
+        window.set_title(PROGRAM_NAME);
+        Window::set_default_icon_name(PROGRAM_NAME);
+
+        window.connect_delete_event(move |_, _| {
+            main_quit();
+            Inhibit(false)
+        });
+
+        App { window, header }
+    }
+}
+
+impl Header {
+    fn new() -> Header {
+        let container = HeaderBar::new();
+
+        container.set_title(Some(PROGRAM_NAME));
+        container.set_show_close_button(true);
+
+        Header { container }
+    }
 }
 
 fn main() {
-    let application = gtk::Application::new(Some(APPLICATION_ID), Default::default())
-        .expect("Failed to initialize gtk application");
+    if gtk::init().is_err() {
+        eprintln!("Failed to initialize GTK application");
+        std::process::exit(1);
+    }
 
-    application.connect_activate(|app| {
-        build_ui(app);
-    });
+    let app = App::new();
+    app.window.show_all();
 
-    application.run(&std::env::args().collect::<Vec<_>>());
+    gtk::main();
 }
