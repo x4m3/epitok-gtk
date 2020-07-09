@@ -132,24 +132,26 @@ fn main() {
         let label_login = app.content.output.clone();
 
         app.header.apply.clone().connect_clicked(move |_| {
+            // get contents of input field
             let new_login = input_login.get_buffer().get_text();
-            let mut new_label = String::new();
 
             // if sign-in fails get error message
-            if let Err(e) = auth.borrow_mut().sign_in(&new_login) {
-                new_label = e.to_string();
-            }
-
-            // if sign-in was ok get user's login
-            if new_label.is_empty() {
-                new_label = match auth.borrow().login() {
-                    Some(login) => login.to_owned(),
-                    None => "???? This should not be possible".to_string(),
-                };
+            match auth.try_borrow_mut() {
+                Ok(mut auth) => match auth.sign_in(&new_login) {
+                    Ok(()) => (),
+                    Err(e) => label_login.set_label(e.to_string().as_str()),
+                },
+                Err(e) => label_login.set_label(e.to_string().as_str()),
             }
 
             // set label with new value
-            label_login.set_label(&new_label);
+            match auth.try_borrow() {
+                Ok(auth) => match auth.login() {
+                    Some(login) => label_login.set_label(login),
+                    None => label_login.set_label("You are not signed in"),
+                },
+                Err(e) => label_login.set_label(e.to_string().as_str()),
+            }
         });
     }
 
