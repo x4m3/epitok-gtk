@@ -115,7 +115,7 @@ fn main() {
         let auth = auth.clone();
         let label_login = app.content.output.clone();
 
-        app.header.cancel.clone().connect_clicked(move |_| {
+        app.header.cancel.connect_clicked(move |_| {
             match auth.try_borrow_mut() {
                 Ok(mut auth) => {
                     auth.sign_out();
@@ -127,7 +127,6 @@ fn main() {
     }
 
     {
-        let auth = auth.clone();
         let input_login = app.content.input.clone();
         let label_login = app.content.output.clone();
 
@@ -148,7 +147,8 @@ fn main() {
             match auth.try_borrow() {
                 Ok(auth) => match auth.login() {
                     Some(login) => label_login.set_label(login),
-                    None => label_login.set_label("You are not signed in"),
+                    // None => label_login.set_label("You are not signed in"),
+                    _ => (),
                 },
                 Err(e) => label_login.set_label(e.to_string().as_str()),
             }
