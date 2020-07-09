@@ -4,10 +4,6 @@ use std::{cell::RefCell, rc::Rc};
 
 const PROGRAM_NAME: &str = "epitok";
 
-pub struct Data {
-    pub auth: Auth,
-}
-
 pub struct App {
     pub window: Window,
     pub header: Header,
@@ -26,17 +22,11 @@ pub struct Content {
     pub output: Label,
 }
 
-impl Data {
-    fn new() -> Data {
-        Data { auth: Auth::new() }
-    }
-}
-
 impl App {
-    fn new(data: &Data) -> App {
+    fn new(auth: &Auth) -> App {
         let window = Window::new(gtk::WindowType::Toplevel);
         let header = Header::new();
-        let content = Content::new(data);
+        let content = Content::new(auth);
 
         window.set_titlebar(Some(&header.container));
         window.set_title(PROGRAM_NAME);
@@ -82,13 +72,13 @@ impl Header {
 }
 
 impl Content {
-    fn new(data: &Data) -> Content {
+    fn new(auth: &Auth) -> Content {
         let container = Box::new(Orientation::Vertical, 0);
 
         let box_current_login = Box::new(Orientation::Horizontal, 0);
         let label_current_login = Label::new("Current login: ".into());
 
-        let label_login = Label::new(data.auth.login().to_owned().as_deref());
+        let label_login = Label::new(auth.login().to_owned().as_deref());
 
         box_current_login.set_halign(Align::Center);
         label_current_login.set_halign(Align::Start);
@@ -117,22 +107,23 @@ fn main() {
         std::process::exit(1);
     }
 
-    let data = Rc::new(RefCell::new(Data::new()));
+    let auth = Rc::new(RefCell::new(Auth::new()));
 
-    let app = App::new(&data.borrow());
+    let app = App::new(&auth.borrow());
 
     {
-        let data_clone = data.clone();
+        let auth = auth.clone();
         let label_login = app.content.output.clone();
 
         app.header.cancel.clone().connect_clicked(move |_| {
-            data_clone.borrow_mut().auth.sign_out();
+            // TODO: borrow_mut -> try_borrow_mut. panic otherwise
+            auth.borrow_mut().sign_out();
             label_login.set_label("You are signed out");
         });
     }
 
     {
-        let data_clone = data.clone();
+        let auth = auth.clone();
         let input_login = app.content.input.clone();
         let label_login = app.content.output.clone();
 
@@ -141,13 +132,13 @@ fn main() {
             let mut new_label = String::new();
 
             // if sign-in fails get error message
-            if let Err(e) = data_clone.borrow_mut().auth.sign_in(&new_login) {
+            if let Err(e) = auth.borrow_mut().sign_in(&new_login) {
                 new_label = e.to_string();
             }
 
             // if sign-in was ok get user's login
             if new_label.is_empty() {
-                new_label = match data_clone.borrow().auth.login() {
+                new_label = match auth.borrow().login() {
                     Some(login) => login.to_owned(),
                     None => "???? This should not be possible".to_string(),
                 };
