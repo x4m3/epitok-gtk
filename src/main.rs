@@ -116,9 +116,18 @@ fn main() {
         let label_login = app.content.output.clone();
 
         app.header.cancel.clone().connect_clicked(move |_| {
-            // TODO: borrow_mut -> try_borrow_mut. panic otherwise
-            auth.borrow_mut().sign_out();
-            label_login.set_label("You are signed out");
+            let auth = match auth.try_borrow_mut() {
+                Ok(auth) => Some(auth),
+                Err(e) => {
+                    label_login.set_label(e.to_string().as_str());
+                    None
+                }
+            };
+
+            if let Some(mut auth) = auth {
+                auth.sign_out();
+                label_login.set_label("You are signed out");
+            };
         });
     }
 
