@@ -190,23 +190,35 @@ fn main() {
             // TODO: check if input is not empty
             let new_login = input_login.get_buffer().get_text();
 
+            let mut new_label = String::new();
             println!("starting to sign-in");
 
-            // if let ab_label = data_clone.borrow_mut().auth.sign_in(&new_login);
+            // if sign-in fails get error message
+            if let Err(e) = data_clone.borrow_mut().auth.sign_in(&new_login) {
+                new_label = e.to_string();
+            }
+            println!("finished to sign-in");
+
+            // if sign-in was ok get user's login
+            if new_label.is_empty() {
+                new_label = match data_clone.borrow().auth.login() {
+                    Some(login) => login.to_owned(),
+                    None => "????".to_string(),
+                };
+            }
             // let aa_label = match data_clone.borrow_mut().auth.sign_in(&new_login) {
             //     Err(e) => e.to_string(),
             //     Ok(_) => {}
             // };
 
-            let new_label = match data_clone.borrow_mut().auth.sign_in(&new_login) {
-                Ok(()) => match data_clone.borrow().auth.login().as_ref() {
-                    Some(a) => a,
-                    _ => unreachable!(),
-                }
-                .into(),
-                Err(e) => e.to_string(),
-            };
-            println!("finished to sign-in");
+            // let new_label = match data_clone.borrow_mut().auth.sign_in(&new_login) {
+            //     Ok(()) => match data_clone.borrow().auth.login().as_ref() {
+            //         Some(a) => a,
+            //         _ => unreachable!(),
+            //     }
+            //     .into(),
+            //     Err(e) => e.to_string(),
+            // };
             label_login.set_label(&new_label);
         });
     }
