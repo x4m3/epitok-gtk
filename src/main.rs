@@ -30,6 +30,7 @@ impl App {
 
         window.set_titlebar(Some(&header.container));
         window.set_title(PROGRAM_NAME);
+        window.set_default_size(600, 640);
         Window::set_default_icon_name(PROGRAM_NAME);
 
         window.add(&content.container);
@@ -102,6 +103,8 @@ impl Content {
 }
 
 fn main() {
+    glib::set_program_name(Some(PROGRAM_NAME.into()));
+
     if gtk::init().is_err() {
         eprintln!("Failed to initialize GTK application");
         std::process::exit(1);
