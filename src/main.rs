@@ -2,9 +2,14 @@ use epitok::auth::Auth;
 use gtk::*;
 use std::{cell::RefCell, rc::Rc};
 
-const PROGRAM_NAME: &str = "epitok";
+const PROGRAM_NAME: &str = "Epitok";
 
 pub struct App {
+    pub ui: Rc<GtkUi>,
+    pub auth: Rc<RefCell<Auth>>,
+}
+
+pub struct GtkUi {
     pub window: Window,
     pub header: Header,
     pub content: Content,
@@ -23,10 +28,38 @@ pub struct Content {
 }
 
 impl App {
-    fn new(auth: &Auth) -> App {
+    fn new() -> Self {
+        glib::set_program_name(Some(PROGRAM_NAME.into()));
+
+        if gtk::init().is_err() {
+            eprintln!("Failed to initialize GTK application");
+            std::process::exit(1);
+        }
+
+        Self {
+            ui: Rc::new(GtkUi::new()),
+            auth: Rc::new(RefCell::new(Auth::new())),
+        }
+    }
+
+    pub fn connect_events(self) -> Self {
+        self.connect_cancel();
+        self.connect_apply();
+
+        self
+    }
+
+    pub fn start(self) {
+        self.ui.window.show_all();
+        gtk::main();
+    }
+}
+
+impl GtkUi {
+    fn new() -> Self {
         let window = Window::new(gtk::WindowType::Toplevel);
         let header = Header::new();
-        let content = Content::new(auth);
+        let content = Content::new();
 
         window.set_titlebar(Some(&header.container));
         window.set_title(PROGRAM_NAME);
@@ -35,12 +68,13 @@ impl App {
 
         window.add(&content.container);
 
+        // When application is being closed
         window.connect_delete_event(move |_, _| {
-            main_quit();
+            gtk::main_quit();
             Inhibit(false)
         });
 
-        App {
+        Self {
             window,
             header,
             content,
@@ -49,7 +83,7 @@ impl App {
 }
 
 impl Header {
-    fn new() -> Header {
+    fn new() -> Self {
         let container = HeaderBar::new();
 
         container.set_title(Some(PROGRAM_NAME));
@@ -64,7 +98,7 @@ impl Header {
         container.pack_start(&cancel);
         container.pack_end(&apply);
 
-        Header {
+        Self {
             container,
             cancel,
             apply,
@@ -73,13 +107,13 @@ impl Header {
 }
 
 impl Content {
-    fn new(auth: &Auth) -> Content {
+    fn new() -> Self {
         let container = Box::new(Orientation::Vertical, 0);
 
         let box_current_login = Box::new(Orientation::Horizontal, 0);
         let label_current_login = Label::new("Current login: ".into());
 
-        let label_login = Label::new(auth.login().to_owned().as_deref());
+        let label_login = Label::new("Please sign-in".into());
 
         box_current_login.set_halign(Align::Center);
         label_current_login.set_halign(Align::Start);
@@ -94,7 +128,7 @@ impl Content {
         container.pack_start(&Separator::new(Orientation::Horizontal), false, false, 0);
         container.pack_start(&input_login, true, false, 0);
 
-        Content {
+        Self {
             container,
             input: input_login,
             output: label_login,
@@ -102,63 +136,99 @@ impl Content {
     }
 }
 
-fn main() {
-    glib::set_program_name(Some(PROGRAM_NAME.into()));
+impl App {
+    pub fn connect_cancel(&self) {
+        let ui = self.ui.clone();
+        let auth = self.auth.clone();
 
-    if gtk::init().is_err() {
-        eprintln!("Failed to initialize GTK application");
-        std::process::exit(1);
-    }
-
-    let auth = Rc::new(RefCell::new(Auth::new()));
-
-    let app = App::new(&auth.borrow());
-
-    {
-        let auth = auth.clone();
-        let label_login = app.content.output.clone();
-
-        app.header.cancel.connect_clicked(move |_| {
+        self.ui.header.cancel.connect_clicked(move |_| {
             match auth.try_borrow_mut() {
                 Ok(mut auth) => {
                     auth.sign_out();
-                    label_login.set_label("You are signed out");
+                    ui.content.output.set_label("You are signed out");
                 }
-                Err(e) => label_login.set_label(e.to_string().as_str()),
+                Err(e) => ui.content.output.set_label(e.to_string().as_str()),
             };
         });
     }
 
-    {
-        let input_login = app.content.input.clone();
-        let label_login = app.content.output.clone();
+    pub fn connect_apply(&self) {
+        let ui = self.ui.clone();
+        let auth = self.auth.clone();
 
-        app.header.apply.clone().connect_clicked(move |_| {
-            // get contents of input field
-            let new_login = input_login.get_buffer().get_text();
+        self.ui.header.apply.connect_clicked(move |_| {
+            let new_login = ui.content.input.get_buffer().get_text();
 
             // if sign-in fails get error message
             match auth.try_borrow_mut() {
                 Ok(mut auth) => match auth.sign_in(&new_login) {
                     Ok(()) => (),
-                    Err(e) => label_login.set_label(e.to_string().as_str()),
+                    Err(e) => ui.content.output.set_label(e.to_string().as_str()),
                 },
-                Err(e) => label_login.set_label(e.to_string().as_str()),
+                Err(e) => ui.content.output.set_label(e.to_string().as_str()),
             }
 
             // set label with new value
             match auth.try_borrow() {
                 Ok(auth) => match auth.login() {
-                    Some(login) => label_login.set_label(login),
+                    Some(login) => ui.content.output.set_label(login),
                     // None => label_login.set_label("You are not signed in"),
                     _ => (),
                 },
-                Err(e) => label_login.set_label(e.to_string().as_str()),
+                Err(e) => ui.content.output.set_label(e.to_string().as_str()),
             }
         });
     }
+}
 
-    app.window.show_all();
+fn main() {
+    App::new().connect_events().start()
+    // let auth = Rc::new(RefCell::new(Auth::new()));
 
-    gtk::main();
+    // let app = App::new(&auth.borrow());
+
+    // {
+    //     let auth = app.auth.clone();
+    //     let label_login = app.ui.content.output.clone();
+
+    //     app.ui.header.cancel.connect_clicked(move |_| {
+    //         match auth.try_borrow_mut() {
+    //             Ok(mut auth) => {
+    //                 auth.sign_out();
+    //                 label_login.set_label("You are signed out");
+    //             }
+    //             Err(e) => label_login.set_label(e.to_string().as_str()),
+    //         };
+    //     });
+    // }
+
+    // {
+    //     let input_login = app.ui.content.input.clone();
+    //     let label_login = app.ui.content.output.clone();
+
+    //     app.ui.header.apply.connect_clicked(move |_| {
+    //         // app.ui.header.apply.clone().connect_clicked(move |_| {
+    //         // get contents of input field
+    //         let new_login = input_login.get_buffer().get_text();
+
+    //         // if sign-in fails get error message
+    //         match app.auth.try_borrow_mut() {
+    //             Ok(mut auth) => match auth.sign_in(&new_login) {
+    //                 Ok(()) => (),
+    //                 Err(e) => label_login.set_label(e.to_string().as_str()),
+    //             },
+    //             Err(e) => label_login.set_label(e.to_string().as_str()),
+    //         }
+
+    //         // set label with new value
+    //         match app.auth.try_borrow() {
+    //             Ok(auth) => match auth.login() {
+    //                 Some(login) => label_login.set_label(login),
+    //                 // None => label_login.set_label("You are not signed in"),
+    //                 _ => (),
+    //             },
+    //             Err(e) => label_login.set_label(e.to_string().as_str()),
+    //         }
+    //     });
+    // }
 }
