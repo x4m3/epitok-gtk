@@ -18,7 +18,7 @@ impl GtkUi {
         window.set_titlebar(Some(&header.container));
         window.set_title(PROGRAM_NAME);
         window.set_default_size(600, 640);
-        Window::set_default_icon_name(PROGRAM_NAME);
+        Window::set_default_icon_name("application-x-executable");
 
         window.add(&content.container);
 
