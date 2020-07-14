@@ -1,32 +1,55 @@
-use crate::strings::PROGRAM_NAME;
+use crate::app::App;
+use epitok::event::list_events_today;
 use gtk::*;
 
 pub struct Header {
     pub container: HeaderBar,
-    pub cancel: Button,
-    pub apply: Button,
+    pub refresh: Button,
+    pub spinner: Spinner,
 }
 
 impl Header {
     pub fn new() -> Self {
         let container = HeaderBar::new();
 
-        container.set_title(Some(PROGRAM_NAME));
+        container.set_subtitle("philippe1.loctaux@epitech.eu".into()); // TODO: replace this by real login
         container.set_show_close_button(true);
 
-        let cancel = Button::with_label("Cancel");
-        let apply = Button::with_label("Apply");
+        let refresh = Button::from_icon_name("view-refresh-symbolic".into(), IconSize::Button);
+        let spinner = Spinner::new();
 
-        cancel.get_style_context().add_class("destructive-action");
-        apply.get_style_context().add_class("suggested-action");
-
-        container.pack_start(&cancel);
-        container.pack_end(&apply);
+        container.pack_start(&refresh);
+        container.pack_start(&spinner);
 
         Self {
             container,
-            cancel,
-            apply,
+            refresh,
+            spinner,
         }
+    }
+}
+
+impl App {
+    pub fn connect_refresh_event(&self) {
+        let ui = self.ui.clone();
+        let auth = self.auth.clone();
+        let events = self.events.clone();
+
+        self.ui.header.refresh.connect_clicked(move |_| {
+            ui.header.refresh.set_sensitive(false);
+            ui.header.spinner.start();
+
+            if let Ok(auth) = auth.try_borrow() {
+                if let Ok(mut events) = events.try_borrow_mut() {
+                    match list_events_today(&mut events, auth.autologin()) {
+                        Ok(x) => println!("success: got {} events", x),
+                        Err(e) => eprintln!("error: {}", e),
+                    }
+                }
+            }
+
+            ui.header.spinner.stop();
+            ui.header.refresh.set_sensitive(true);
+        });
     }
 }
