@@ -175,7 +175,6 @@ name = "epitok-gtk"
 version = "0.1.0"
 dependencies = [
  "epitok",
- "gio",
  "glib",
  "gtk",
 ]
