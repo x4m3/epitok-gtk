@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg height="16px" viewBox="0 0 16 16" width="16px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <filter id="a" height="100%" width="100%" x="0%" y="0%">
+        <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+    </filter>
+    <mask id="b">
+        <g filter="url(#a)">
+            <rect fill-opacity="0.3" height="16" width="16"/>
+        </g>
+    </mask>
+    <clipPath id="c">
+        <rect height="152" width="192"/>
+    </clipPath>
+    <g clip-path="url(#c)" fill="none" mask="url(#b)" stroke="#d5d3cf" stroke-width="2" transform="matrix(1 0 0 1 -168 -16)">
+        <path d="m 27.999969 192.000854 h 72" transform="matrix(1 0 0 1 8.000031 -156.504761)"/>
+        <path d="m 27.999969 202.000854 h 72" transform="matrix(1 0 0 1 8.000031 -156.504761)"/>
+        <path d="m 27.999969 212.000854 h 72" transform="matrix(1 0 0 1 8.000031 -156.504761)"/>
+        <path d="m 27.999969 222.000854 h 72" transform="matrix(1 0 0 1 8.000031 -156.504761)"/>
+        <path d="m 27.999969 232.000854 h 72" transform="matrix(1 0 0 1 8.000031 -156.504761)"/>
+        <path d="m 27.999969 242.000854 h 72" transform="matrix(1 0 0 1 8.000031 -156.504761)"/>
+        <path d="m 27.999969 252.000854 h 72" transform="matrix(1 0 0 1 8.000031 -156.504761)"/>
+        <path d="m 27.999969 262.000854 h 72" transform="matrix(1 0 0 1 8.000031 -156.504761)"/>
+        <path d="m 27.999969 272.000854 h 66" transform="matrix(1 0 0 1 8.000031 -156.504761)"/>
+    </g>
+    <path d="m 5.527344 0.191406 c -1.09375 0 -1.914063 0.679688 -2.230469 1.296875 c -0.3125 0.613281 -0.300781 1.203125 -0.300781 1.203125 v 13.117188 l 5 -2.5 l 4.996094 2.5 l 0.011718 -7.617188 h -0.003906 l -0.003906 -5.5 s 0.011718 -0.582031 -0.292969 -1.195312 c -0.308594 -0.617188 -1.125 -1.304688 -2.207031 -1.304688 z m 0 2 h 4.96875 c 0.417968 0 0.347656 0.058594 0.417968 0.195313 c 0.042969 0.097656 0.070313 0.199219 0.082032 0.304687 l 0.003906 7.5 l -0.003906 2.382813 l -3 -1.5 l -3 1.5 v -9.882813 s 0.011718 -0.160156 0.082031 -0.292968 c 0.070313 -0.136719 0.007813 -0.207032 0.449219 -0.207032 z m 0 0" fill="#2e3436" fill-rule="evenodd"/>
+</svg>
