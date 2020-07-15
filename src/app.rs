@@ -28,6 +28,8 @@ impl App {
 
     pub fn connect_events(self) -> Self {
         self.connect_refresh_event();
+        self.connect_show_about();
+
         self
     }
 

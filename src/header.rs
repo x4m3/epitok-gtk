@@ -6,6 +6,8 @@ pub struct Header {
     pub container: HeaderBar,
     pub refresh: Button,
     pub spinner: Spinner,
+    pub preferences: Button,
+    pub about: Button,
 }
 
 impl Header {
@@ -18,25 +20,20 @@ impl Header {
         let refresh = Button::from_icon_name("view-refresh-symbolic".into(), IconSize::Button);
         let spinner = Spinner::new();
 
-        let menu_button = MenuButton::new();
-        let menu_button_icon = Image::from_icon_name("open-menu-symbolic".into(), IconSize::Button);
-        menu_button.add(&menu_button_icon);
-
-        let menu = gio::Menu::new();
-        let preferences_button = gio::MenuItem::new("Preferences".into(), None);
-        menu.append_item(&preferences_button);
-        let about_button = gio::MenuItem::new("About".into(), None);
-        menu.append_item(&about_button);
-        menu_button.set_menu_model(Some(&menu));
+        let preferences = Button::with_label("Preferences");
+        let about = Button::with_label("About");
 
         container.pack_start(&refresh);
         container.pack_start(&spinner);
-        container.pack_end(&menu_button);
+        container.pack_end(&about);
+        container.pack_end(&preferences);
 
         Self {
             container,
             refresh,
             spinner,
+            preferences,
+            about,
         }
     }
 }
