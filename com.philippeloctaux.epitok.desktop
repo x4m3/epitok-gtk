@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Epitok
+GenericName=Epitok
+Comment=Set students presence for Epitech events
+Categories=Utility;GTK
+Icon=com.philippeloctaux.epitok
+Exec=com.philippeloctaux.epitok
+Terminal=false
+Type=Application

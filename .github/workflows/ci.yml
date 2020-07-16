@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Install GTK
-        run: sudo apt update && sudo apt install gnome-platform-devel
+        run: sudo apt install gnome-platform-devel
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
@@ -19,23 +19,9 @@ jobs:
         with:
           command: check
 
-  test:
-    name: Test Suite
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-
   fmt:
     name: Rustfmt
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -51,8 +37,10 @@ jobs:
 
   clippy:
     name: Clippy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
+      - name: Install GTK
+        run: sudo apt install gnome-platform-devel
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
