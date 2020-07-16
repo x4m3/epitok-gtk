@@ -1,6 +1,6 @@
 use crate::content::Content;
 use crate::header::Header;
-use crate::strings::{ICON, PROGRAM_NAME};
+use crate::strings::{PROGRAM_ID, PROGRAM_NAME};
 use gtk::*;
 
 pub struct GtkUi {
@@ -18,7 +18,7 @@ impl GtkUi {
         window.set_titlebar(Some(&header.container));
         window.set_title(PROGRAM_NAME);
         window.set_default_size(600, 640);
-        Window::set_default_icon_name(ICON);
+        window.set_icon_name(PROGRAM_ID.into());
 
         window.add(&content.container);
 

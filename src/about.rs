@@ -11,7 +11,7 @@ impl App {
             let about = AboutDialog::new();
             about.set_program_name(PROGRAM_NAME.into());
             about.set_version(VERSION.into());
-            about.set_logo_icon_name(ICON.into());
+            about.set_logo_icon_name(PROGRAM_ID.into());
             about.set_copyright("© 2020 Philippe Loctaux".into());
             about.set_website("https://github.com/x4m3/epitok-gtk".into());
             about.set_website_label("Source code".into());
