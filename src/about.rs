@@ -9,7 +9,7 @@ impl App {
         self.ui.header.about.connect_clicked(move |_| {
             // define about window
             let about = AboutDialog::new();
-            about.set_program_name(PROGRAM_NAME.into());
+            about.set_program_name(PROGRAM_NAME);
             about.set_version(VERSION.into());
             about.set_logo_icon_name(PROGRAM_ID.into());
             about.set_copyright("© 2020 Philippe Loctaux".into());
