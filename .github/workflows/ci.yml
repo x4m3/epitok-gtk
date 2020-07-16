@@ -5,10 +5,10 @@ name: Continuous integration
 jobs:
   check:
     name: Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Install GTK
-        run: sudo apt update && sudo apt install gnome-devel
+        run: sudo apt update && sudo apt install gnome-platform-devel
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
