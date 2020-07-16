@@ -3,14 +3,12 @@ on: [push, pull_request]
 name: Continuous integration
 
 jobs:
-  install-gtk:
-    name: Install GTK
-    runs-on: ubuntu-latest
-    run: sudo apt install libgtk-3-0
   check:
     name: Check
     runs-on: ubuntu-latest
     steps:
+      - name: Install GTK
+        run: sudo apt install libgtk-3-0
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
