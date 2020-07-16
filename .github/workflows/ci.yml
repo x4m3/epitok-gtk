@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Install GTK
-        run: sudo apt install gnome-platform-devel
+        run: sudo apt update && sudo apt install gnome-platform-devel
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Install GTK
-        run: sudo apt install gnome-platform-devel
+        run: sudo apt update && sudo apt install gnome-platform-devel
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
