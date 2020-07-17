@@ -13,10 +13,10 @@ fn create_status_label(auth: Rc<RefCell<Auth>>) -> Label {
                 Some(login) => format!("You are signed in as {}", login),
                 None => unreachable!(),
             },
-            Status::SignedOut => "Sign in with your autologin link".to_string(),
+            Status::SignedOut => "Sign in with your <a href=\"https://intra.epitech.eu/admin/autolog\">autologin</a> link".to_string(),
             Status::Error(e) => e.to_string(),
         };
-        label.set_label(&text);
+        label.set_markup(&text);
     }
     label
 }
@@ -26,17 +26,10 @@ fn create_action_button(auth: Rc<RefCell<Auth>>) -> Button {
 
     if let Ok(auth) = auth.try_borrow() {
         match auth.status() {
-            Status::SignedIn => {
-                button.set_label("Sign out");
-                button.get_style_context().add_class("destructive-action");
-            }
-            _ => {
-                button.set_label("Sign in");
-                button.get_style_context().add_class("suggested-action");
-            }
+            Status::SignedIn => button.set_label("Sign out"),
+            _ => button.set_label("Sign in"),
         }
     }
-
     button
 }
 
@@ -53,16 +46,42 @@ impl App {
             let account = Label::new("Account".into());
             let status = create_status_label(auth.clone());
             let action = create_action_button(auth.clone());
+            let input = Entry::new();
 
             container.pack_start(&account, false, false, 0);
             container.pack_start(&status, false, false, 0);
+            container.pack_start(&input, false, false, 0);
             container.pack_start(&action, false, false, 0);
 
             window.add(&container);
 
-            action.connect_clicked(clone!(@weak action => move |_| {
-                action.set_label("this is a test");
-            }));
+            action.connect_clicked(
+                clone!(@weak action, @weak auth, @weak status, @weak input => move |_| {
+                        if let Ok(mut auth) = auth.try_borrow_mut() {
+                            match auth.status() {
+                                Status::SignedIn => {
+                                    auth.sign_out();
+                                    input.show();
+                                    action.set_label("Sign in");
+                                },
+                                _ => {
+                                let input_str = input.get_buffer().get_text();
+                                match auth.sign_in(&input_str) {
+                                Ok(()) => {
+                match auth.login() {
+                    Some(login) => status.set_label(format!("You are signed in as {}", login).as_str()),
+                    None => unreachable!(),
+                }
+                                    input.hide();
+                                    action.set_label("Sign out");
+                                },
+                                Err(e) => status.set_label(&e.to_string()),
+                                }
+                                },
+                            }
+                        };
+                    }),
+            );
 
             window.show_all();
         });
