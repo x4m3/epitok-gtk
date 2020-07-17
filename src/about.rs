@@ -18,9 +18,10 @@ impl App {
             about.set_modal(true);
 
             // credits
-            let authors = &["Philippe Loctaux"];
+            let authors = &["Philippe Loctaux http://philippeloctaux.com"];
             about.set_authors(authors);
 
+            // artists
             let artists = &["Ghassane Sebaï"];
             about.set_artists(artists);
 

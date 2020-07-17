@@ -11,7 +11,7 @@ pub struct GtkUi {
 
 impl GtkUi {
     pub fn new() -> Self {
-        let window = Window::new(gtk::WindowType::Toplevel);
+        let window = Window::new(WindowType::Toplevel);
         let header = Header::new();
         let content = Content::new();
 
