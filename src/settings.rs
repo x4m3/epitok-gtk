@@ -4,16 +4,20 @@ use glib::clone;
 use gtk::*;
 use std::{cell::RefCell, rc::Rc};
 
+const SIGNED_IN_MSG: &str = "You are signed in as ";
+const SIGN_IN_MSG: &str =
+    "Sign in with your <a href=\"https://intra.epitech.eu/admin/autolog\">autologin</a> link";
+
 fn create_status_label(auth: Rc<RefCell<Auth>>) -> Label {
     let label = Label::new(None);
 
     if let Ok(auth) = auth.try_borrow() {
         let text = match auth.status() {
             Status::SignedIn => match auth.login() {
-                Some(login) => format!("You are signed in as {}", login),
+                Some(login) => format!("{}{}", SIGNED_IN_MSG, login),
                 None => unreachable!(),
             },
-            Status::SignedOut => "Sign in with your <a href=\"https://intra.epitech.eu/admin/autolog\">autologin</a> link".to_string(),
+            Status::SignedOut => SIGN_IN_MSG.to_string(),
             Status::Error(e) => e.to_string(),
         };
         label.set_markup(&text);
@@ -61,6 +65,7 @@ impl App {
                             match auth.status() {
                                 Status::SignedIn => {
                                     auth.sign_out();
+                                    status.set_markup(SIGN_IN_MSG);
                                     input.show();
                                     action.set_label("Sign in");
                                 },
@@ -69,7 +74,7 @@ impl App {
                                 match auth.sign_in(&input_str) {
                                 Ok(()) => {
                 match auth.login() {
-                    Some(login) => status.set_label(format!("You are signed in as {}", login).as_str()),
+                    Some(login) => status.set_label(format!("{}{}", SIGNED_IN_MSG, login).as_str()),
                     None => unreachable!(),
                 }
                                     input.hide();
