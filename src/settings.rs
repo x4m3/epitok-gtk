@@ -37,6 +37,35 @@ fn create_action_button(auth: Rc<RefCell<Auth>>) -> Button {
     button
 }
 
+fn connect_action_button(action: Button, auth: Rc<RefCell<Auth>>, status: Label, input: Entry) {
+    action.connect_clicked(clone!(@weak action => move |_| {
+            if let Ok(mut auth) = auth.try_borrow_mut() {
+                match auth.status() {
+                    Status::SignedIn => {
+                        auth.sign_out();
+                        status.set_markup(SIGN_IN_MSG);
+                        input.show();
+                        action.set_label("Sign in");
+                    },
+                    _ => {
+                    let input_str = input.get_buffer().get_text();
+                    match auth.sign_in(&input_str) {
+                    Ok(()) => {
+    match auth.login() {
+        Some(login) => status.set_label(format!("{}{}", SIGNED_IN_MSG, login).as_str()),
+        None => unreachable!(),
+    }
+                        input.hide();
+                        action.set_label("Sign out");
+                    },
+                    Err(e) => status.set_label(&e.to_string()),
+                    }
+                    },
+                }
+            };
+        }));
+}
+
 impl App {
     pub fn connect_show_settings(&self) {
         let auth = self.auth.clone();
@@ -59,34 +88,7 @@ impl App {
 
             window.add(&container);
 
-            action.connect_clicked(
-                clone!(@weak action, @weak auth, @weak status, @weak input => move |_| {
-                        if let Ok(mut auth) = auth.try_borrow_mut() {
-                            match auth.status() {
-                                Status::SignedIn => {
-                                    auth.sign_out();
-                                    status.set_markup(SIGN_IN_MSG);
-                                    input.show();
-                                    action.set_label("Sign in");
-                                },
-                                _ => {
-                                let input_str = input.get_buffer().get_text();
-                                match auth.sign_in(&input_str) {
-                                Ok(()) => {
-                match auth.login() {
-                    Some(login) => status.set_label(format!("{}{}", SIGNED_IN_MSG, login).as_str()),
-                    None => unreachable!(),
-                }
-                                    input.hide();
-                                    action.set_label("Sign out");
-                                },
-                                Err(e) => status.set_label(&e.to_string()),
-                                }
-                                },
-                            }
-                        };
-                    }),
-            );
+            connect_action_button(action, auth.clone(), status, input);
 
             window.show_all();
         });
