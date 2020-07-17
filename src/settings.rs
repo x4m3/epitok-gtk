@@ -28,14 +28,12 @@ impl App {
         let auth = self.auth.clone();
 
         self.ui.header.settings.connect_clicked(move |_| {
-            let auth = auth.clone();
-
             let window = Window::new(WindowType::Toplevel);
             window.set_title("Settings");
             window.set_default_size(340, 300);
 
             let container = Box::new(Orientation::Vertical, 0);
-            let action = create_action_button(auth);
+            let action = create_action_button(auth.clone());
 
             container.pack_start(&action, true, false, 0);
 
