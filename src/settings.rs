@@ -1,19 +1,36 @@
 use crate::app::App;
-use epitok::auth::Auth;
+use epitok::auth::{Auth, Status};
 use glib::clone;
 use gtk::*;
 use std::{cell::RefCell, rc::Rc};
+
+fn create_status_label(auth: Rc<RefCell<Auth>>) -> Label {
+    let label = Label::new(None);
+
+    if let Ok(auth) = auth.try_borrow() {
+        let text = match auth.status() {
+            Status::SignedIn => match auth.login() {
+                Some(login) => format!("You are signed in as {}", login),
+                None => unreachable!(),
+            },
+            Status::SignedOut => "Sign in with your autologin link".to_string(),
+            Status::Error(e) => e.to_string(),
+        };
+        label.set_label(&text);
+    }
+    label
+}
 
 fn create_action_button(auth: Rc<RefCell<Auth>>) -> Button {
     let button = Button::new();
 
     if let Ok(auth) = auth.try_borrow() {
         match auth.status() {
-            true => {
+            Status::SignedIn => {
                 button.set_label("Sign out");
                 button.get_style_context().add_class("destructive-action");
             }
-            false => {
+            _ => {
                 button.set_label("Sign in");
                 button.get_style_context().add_class("suggested-action");
             }
@@ -33,9 +50,13 @@ impl App {
             window.set_default_size(340, 300);
 
             let container = Box::new(Orientation::Vertical, 0);
+            let account = Label::new("Account".into());
+            let status = create_status_label(auth.clone());
             let action = create_action_button(auth.clone());
 
-            container.pack_start(&action, true, false, 0);
+            container.pack_start(&account, false, false, 0);
+            container.pack_start(&status, false, false, 0);
+            container.pack_start(&action, false, false, 0);
 
             window.add(&container);
 
