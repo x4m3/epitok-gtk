@@ -2,6 +2,7 @@ mod about;
 mod app;
 mod content;
 mod header;
+mod settings;
 mod strings;
 mod ui;
 

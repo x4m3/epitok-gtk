@@ -6,7 +6,7 @@ pub struct Header {
     pub container: HeaderBar,
     pub refresh: Button,
     pub spinner: Spinner,
-    pub preferences: Button,
+    pub settings: Button,
     pub about: Button,
 }
 
@@ -20,19 +20,19 @@ impl Header {
         let refresh = Button::from_icon_name("view-refresh-symbolic".into(), IconSize::Button);
         let spinner = Spinner::new();
 
-        let preferences = Button::with_label("Preferences");
+        let settings = Button::with_label("Settings");
         let about = Button::with_label("About");
 
         container.pack_start(&refresh);
         container.pack_start(&spinner);
         container.pack_end(&about);
-        container.pack_end(&preferences);
+        container.pack_end(&settings);
 
         Self {
             container,
             refresh,
             spinner,
-            preferences,
+            settings,
             about,
         }
     }
