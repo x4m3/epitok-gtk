@@ -39,31 +39,31 @@ fn create_action_button(auth: Rc<RefCell<Auth>>) -> Button {
 
 fn connect_action_button(action: Button, auth: Rc<RefCell<Auth>>, status: Label, input: Entry) {
     action.connect_clicked(clone!(@weak action => move |_| {
-            if let Ok(mut auth) = auth.try_borrow_mut() {
-                match auth.status() {
-                    Status::SignedIn => {
-                        auth.sign_out();
-                        status.set_markup(SIGN_IN_MSG);
-                        input.show();
-                        action.set_label("Sign in");
-                    },
-                    _ => {
+        if let Ok(mut auth) = auth.try_borrow_mut() {
+            match auth.status() {
+                Status::SignedIn => {
+                    auth.sign_out();
+                    status.set_markup(SIGN_IN_MSG);
+                    input.show();
+                    action.set_label("Sign in");
+                },
+                _ => {
                     let input_str = input.get_buffer().get_text();
                     match auth.sign_in(&input_str) {
-                    Ok(()) => {
-    match auth.login() {
-        Some(login) => status.set_label(format!("{}{}", SIGNED_IN_MSG, login).as_str()),
-        None => unreachable!(),
-    }
-                        input.hide();
-                        action.set_label("Sign out");
-                    },
-                    Err(e) => status.set_label(&e.to_string()),
+                        Ok(()) => {
+                            match auth.login() {
+                                Some(login) => status.set_label(format!("{}{}", SIGNED_IN_MSG, login).as_str()),
+                                None => unreachable!(),
+                            }
+                            input.hide();
+                            action.set_label("Sign out");
+                        },
+                        Err(e) => status.set_label(&e.to_string()),
                     }
-                    },
-                }
-            };
-        }));
+                },
+            }
+        };
+    }));
 }
 
 impl App {
