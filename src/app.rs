@@ -19,11 +19,11 @@ impl App {
             std::process::exit(1);
         }
 
-        Self {
-            ui: Rc::new(GtkUi::new()),
-            auth: Rc::new(RefCell::new(Auth::new())),
-            events: Rc::new(RefCell::new(Vec::new())),
-        }
+        let auth = Rc::new(RefCell::new(Auth::new()));
+        let events = Rc::new(RefCell::new(Vec::new()));
+        let ui = Rc::new(GtkUi::new());
+
+        Self { auth, events, ui }
     }
 
     pub fn connect_events(self) -> Self {
