@@ -14,7 +14,6 @@ impl Header {
     pub fn new() -> Self {
         let container = HeaderBar::new();
 
-        container.set_subtitle("first.last@epitech.eu".into()); // TODO: replace this by real login
         container.set_show_close_button(true);
 
         let refresh = Button::from_icon_name("view-refresh-symbolic".into(), IconSize::Button);

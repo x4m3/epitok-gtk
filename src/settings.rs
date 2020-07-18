@@ -39,7 +39,13 @@ fn create_action_button(auth: Rc<RefCell<Auth>>) -> Button {
     button
 }
 
-fn sign_in(action: Button, mut auth: RefMut<Auth>, status: Label, input: Entry) {
+fn sign_in(
+    action: Button,
+    mut auth: RefMut<Auth>,
+    status: Label,
+    input: Entry,
+    header_container: HeaderBar,
+) {
     let input_str = input.get_buffer().get_text();
     if input_str.is_empty() {
         return;
@@ -47,7 +53,10 @@ fn sign_in(action: Button, mut auth: RefMut<Auth>, status: Label, input: Entry) 
     match auth.sign_in(&input_str) {
         Ok(()) => {
             match auth.login() {
-                Some(login) => status.set_label(format!("{}{}", SIGNED_IN_MSG, login).as_str()),
+                Some(login) => {
+                    header_container.set_subtitle(Some(login.as_str()));
+                    status.set_label(format!("{}{}", SIGNED_IN_MSG, login).as_str())
+                }
                 None => unreachable!(),
             }
             input.hide();
@@ -57,16 +66,24 @@ fn sign_in(action: Button, mut auth: RefMut<Auth>, status: Label, input: Entry) 
     }
 }
 
-fn sign_out(action: Button, mut auth: RefMut<Auth>, status: Label, input: Entry) {
+fn sign_out(
+    action: Button,
+    mut auth: RefMut<Auth>,
+    status: Label,
+    input: Entry,
+    header_container: HeaderBar,
+) {
     auth.sign_out();
     status.set_markup(SIGN_IN_MSG);
     input.show();
     action.set_label("Sign in");
+    header_container.set_subtitle(None);
 }
 
 impl App {
     pub fn connect_show_settings(&self) {
         let auth = self.auth.clone();
+        let header_container = self.ui.header.container.clone();
 
         self.ui.header.settings.connect_clicked(move |_| {
             let window = Window::new(WindowType::Toplevel);
@@ -87,13 +104,12 @@ impl App {
             window.add(&container);
 
             // When action button is clicked
-            action.connect_clicked(clone!(@weak action, @weak auth => move |_| {
+            action.connect_clicked(clone!(@weak action, @weak auth, @weak header_container => move |_| {
                 if let Ok(auth) = auth.try_borrow_mut() {
                     match auth.status() {
-                        Status::SignedIn => sign_out(action, auth, status.clone(), input.clone()),
-                        _ => sign_in(action, auth, status.clone(), input.clone()),
+                        Status::SignedIn => sign_out(action, auth, status.clone(), input.clone(), header_container),
+                        _ => sign_in(action, auth, status.clone(), input.clone(), header_container),
                     }
-                    // connect_action_button(action, auth, status.clone(), input.clone());
                 };
             }));
 
