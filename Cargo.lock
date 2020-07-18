@@ -163,7 +163,6 @@ dependencies = [
 [[package]]
 name = "epitok"
 version = "0.1.0"
-source = "git+https://github.com/x4m3/epitok#c3e89692cdc582e1eef2dc075b2ee731a4b2f836"
 dependencies = [
  "chrono",
  "regex",
