@@ -30,6 +30,7 @@ fn create_status_label(auth: Rc<RefCell<Auth>>) -> Label {
 
 fn create_action_button(auth: Rc<RefCell<Auth>>) -> Button {
     let button = Button::new();
+
     if let Ok(auth) = auth.try_borrow() {
         match auth.status() {
             Status::SignedIn => button.set_label("Sign out"),
@@ -102,6 +103,12 @@ impl App {
             container.pack_start(&action, false, false, 0);
 
             window.add(&container);
+            window.show_all();
+
+            // If we are already signed in don't show entry
+            if let Ok(auth) = auth.try_borrow() {
+                if let Status::SignedIn = auth.status() { input.hide() }
+            }
 
             // When action button is clicked
             action.connect_clicked(clone!(@weak action, @weak auth, @weak header_container => move |_| {
@@ -112,8 +119,6 @@ impl App {
                     }
                 };
             }));
-
-            window.show_all();
         });
     }
 }

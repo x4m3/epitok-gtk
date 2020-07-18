@@ -14,14 +14,12 @@ impl Header {
     pub fn new() -> Self {
         let container = HeaderBar::new();
 
-        container.set_show_close_button(true);
-
         let refresh = Button::from_icon_name("view-refresh-symbolic".into(), IconSize::Button);
         let spinner = Spinner::new();
-
         let settings = Button::with_label("Settings");
         let about = Button::with_label("About");
 
+        container.set_show_close_button(true);
         container.pack_start(&refresh);
         container.pack_start(&spinner);
         container.pack_end(&about);
