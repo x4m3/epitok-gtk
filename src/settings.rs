@@ -27,7 +27,6 @@ fn create_status_label(auth: Rc<RefCell<Auth>>) -> Label {
 
 fn create_action_button(auth: Rc<RefCell<Auth>>) -> Button {
     let button = Button::new();
-
     if let Ok(auth) = auth.try_borrow() {
         match auth.status() {
             Status::SignedIn => button.set_label("Sign out"),
@@ -49,6 +48,9 @@ fn connect_action_button(action: Button, auth: Rc<RefCell<Auth>>, status: Label,
                 },
                 _ => {
                     let input_str = input.get_buffer().get_text();
+                    if input_str.is_empty() {
+                        return;
+                    }
                     match auth.sign_in(&input_str) {
                         Ok(()) => {
                             match auth.login() {
