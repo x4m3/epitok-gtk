@@ -2,7 +2,10 @@ use crate::app::App;
 use epitok::auth::{Auth, Status};
 use glib::clone;
 use gtk::*;
-use std::{cell::RefCell, rc::Rc};
+use std::{
+    cell::{RefCell, RefMut},
+    rc::Rc,
+};
 
 const SIGNED_IN_MSG: &str = "You are signed in as ";
 const SIGN_IN_MSG: &str =
@@ -36,36 +39,29 @@ fn create_action_button(auth: Rc<RefCell<Auth>>) -> Button {
     button
 }
 
-fn connect_action_button(action: Button, auth: Rc<RefCell<Auth>>, status: Label, input: Entry) {
-    action.connect_clicked(clone!(@weak action => move |_| {
-        if let Ok(mut auth) = auth.try_borrow_mut() {
-            match auth.status() {
-                Status::SignedIn => {
-                    auth.sign_out();
-                    status.set_markup(SIGN_IN_MSG);
-                    input.show();
-                    action.set_label("Sign in");
-                },
-                _ => {
-                    let input_str = input.get_buffer().get_text();
-                    if input_str.is_empty() {
-                        return;
-                    }
-                    match auth.sign_in(&input_str) {
-                        Ok(()) => {
-                            match auth.login() {
-                                Some(login) => status.set_label(format!("{}{}", SIGNED_IN_MSG, login).as_str()),
-                                None => unreachable!(),
-                            }
-                            input.hide();
-                            action.set_label("Sign out");
-                        },
-                        Err(e) => status.set_label(&e.to_string()),
-                    }
-                },
+fn sign_in(action: Button, mut auth: RefMut<Auth>, status: Label, input: Entry) {
+    let input_str = input.get_buffer().get_text();
+    if input_str.is_empty() {
+        return;
+    }
+    match auth.sign_in(&input_str) {
+        Ok(()) => {
+            match auth.login() {
+                Some(login) => status.set_label(format!("{}{}", SIGNED_IN_MSG, login).as_str()),
+                None => unreachable!(),
             }
-        };
-    }));
+            input.hide();
+            action.set_label("Sign out");
+        }
+        Err(e) => status.set_label(&e.to_string()),
+    }
+}
+
+fn sign_out(action: Button, mut auth: RefMut<Auth>, status: Label, input: Entry) {
+    auth.sign_out();
+    status.set_markup(SIGN_IN_MSG);
+    input.show();
+    action.set_label("Sign in");
 }
 
 impl App {
@@ -90,7 +86,16 @@ impl App {
 
             window.add(&container);
 
-            connect_action_button(action, auth.clone(), status, input);
+            // When action button is clicked
+            action.connect_clicked(clone!(@weak action, @weak auth => move |_| {
+                if let Ok(auth) = auth.try_borrow_mut() {
+                    match auth.status() {
+                        Status::SignedIn => sign_out(action, auth, status.clone(), input.clone()),
+                        _ => sign_in(action, auth, status.clone(), input.clone()),
+                    }
+                    // connect_action_button(action, auth, status.clone(), input.clone());
+                };
+            }));
 
             window.show_all();
         });
