@@ -17,7 +17,7 @@ fn create_status_label(auth: Rc<RefCell<Auth>>) -> Label {
     if let Ok(auth) = auth.try_borrow() {
         let text = match auth.status() {
             Status::SignedIn => match auth.login() {
-                Some(login) => format!("{}{}", SIGNED_IN_MSG, login),
+                Some(login) => format!("{}<b>{}</b>", SIGNED_IN_MSG, login),
                 None => unreachable!(),
             },
             Status::SignedOut => SIGN_IN_MSG.to_string(),
@@ -56,7 +56,7 @@ fn sign_in(
             match auth.login() {
                 Some(login) => {
                     header_container.set_subtitle(Some(login.as_str()));
-                    status.set_label(format!("{}{}", SIGNED_IN_MSG, login).as_str())
+                    status.set_markup(format!("{}<b>{}</b>", SIGNED_IN_MSG, login).as_str());
                 }
                 None => unreachable!(),
             }
@@ -85,22 +85,29 @@ impl App {
     pub fn connect_show_settings(&self) {
         let auth = self.auth.clone();
         let header_container = self.ui.header.container.clone();
+        let parent_window = self.ui.window.clone();
 
         self.ui.header.settings.connect_clicked(move |_| {
             let window = Window::new(WindowType::Toplevel);
             window.set_title("Settings");
-            window.set_default_size(340, 300);
+            window.set_default_size(525, 300);
+            window.set_transient_for(Some(&parent_window)); // Set which window is the parent
+            window.set_modal(true); // Can't interact with parent window
 
             let container = Box::new(Orientation::Vertical, 0);
-            let account = Label::new("Account".into());
             let status = create_status_label(auth.clone());
             let action = create_action_button(auth.clone());
-            let input = Entry::new();
 
-            container.pack_start(&account, false, false, 0);
-            container.pack_start(&status, false, false, 0);
-            container.pack_start(&input, false, false, 0);
-            container.pack_start(&action, false, false, 0);
+            let input = Entry::new();
+            input.set_alignment(0.5); // Center content
+
+            let account = Label::new(None);
+            account.set_markup("<span size=\"large\">Account</span>");
+
+            container.pack_start(&account, true, false, 10);
+            container.pack_start(&status, true, false, 0);
+            container.pack_start(&input, true, false, 0);
+            container.pack_end(&action, true, false, 10);
 
             window.add(&container);
             window.show_all();
