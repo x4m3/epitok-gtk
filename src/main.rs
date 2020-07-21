@@ -10,5 +10,9 @@ mod ui;
 use crate::app::App;
 
 fn main() {
-    App::new().connect_events().start().save_settings();
+    App::new()
+        .load_settings()
+        .connect_events()
+        .start()
+        .save_settings();
 }

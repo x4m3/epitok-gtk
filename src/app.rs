@@ -1,4 +1,4 @@
-use crate::storage::save_settings;
+use crate::storage::{load, save};
 use crate::strings::PROGRAM_NAME;
 use crate::ui::GtkUi;
 use epitok::{auth::Auth, event::Event};
@@ -27,6 +27,12 @@ impl App {
         Self { auth, events, ui }
     }
 
+    pub fn load_settings(self) -> Self {
+        load();
+
+        self
+    }
+
     pub fn connect_events(self) -> Self {
         self.connect_refresh_event();
         self.connect_show_about();
@@ -44,7 +50,7 @@ impl App {
 
     pub fn save_settings(self) {
         if let Ok(auth) = self.auth.try_borrow() {
-            save_settings(auth.autologin());
+            save(auth.autologin());
         }
     }
 }

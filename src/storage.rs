@@ -23,9 +23,9 @@ fn get_config_path() -> Option<PathBuf> {
     }
 }
 
-pub fn load_autologin() {}
+pub fn load() {}
 
-pub fn save_settings(autologin: &Option<String>) {
+pub fn save(autologin: &Option<String>) {
     let storage = Storage {
         autologin: match autologin {
             Some(autologin) => Some(autologin.to_string()),
