@@ -1,3 +1,4 @@
+use crate::storage::save_settings;
 use crate::strings::PROGRAM_NAME;
 use crate::ui::GtkUi;
 use epitok::{auth::Auth, event::Event};
@@ -34,8 +35,16 @@ impl App {
         self
     }
 
-    pub fn start(self) {
+    pub fn start(self) -> Self {
         self.ui.window.show_all();
         gtk::main();
+
+        self
+    }
+
+    pub fn save_settings(self) {
+        if let Ok(auth) = self.auth.try_borrow() {
+            save_settings(auth.autologin());
+        }
     }
 }
