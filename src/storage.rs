@@ -1,10 +1,42 @@
 use crate::strings::{APPLICATION, ORGANIZATION, QUALIFIER};
 use directories_next::ProjectDirs;
+use serde_derive::Serialize;
 use std::path::PathBuf;
 
-#[derive(Debug)]
-struct Storage {
-    autologin: Option<String>,
+#[derive(Serialize)]
+pub struct Storage {
+    pub online_status: bool,
+    pub autologin: Option<String>,
+}
+
+impl Storage {
+    pub fn new() -> Self {
+        Self {
+            online_status: false,
+            autologin: None,
+        }
+    }
+
+    pub fn load(&mut self) {
+        if let Some(path) = get_config_path() {
+            println!("loading from path {:?}", path);
+            // read the file and deserialize content
+        }
+    }
+
+    pub fn save(&mut self) {
+        if let Some(path) = get_config_path() {
+            println!("saving to path {:?}", path);
+            let _output = match toml::to_string(&self) {
+                Ok(output) => output,
+                Err(e) => {
+                    eprintln!("error: {}", e);
+                    return;
+                }
+            };
+            // write to file
+        }
+    }
 }
 
 fn get_config_path() -> Option<PathBuf> {
@@ -20,20 +52,5 @@ fn get_config_path() -> Option<PathBuf> {
             Some(path)
         }
         None => None,
-    }
-}
-
-pub fn load() {}
-
-pub fn save(autologin: &Option<String>) {
-    let storage = Storage {
-        autologin: match autologin {
-            Some(autologin) => Some(autologin.to_string()),
-            None => None,
-        },
-    };
-
-    if let Some(path) = get_config_path() {
-        println!("saving to path {:?}", path);
     }
 }

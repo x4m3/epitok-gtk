@@ -1,7 +1,10 @@
-use crate::storage::{load, save};
+use crate::storage::Storage;
 use crate::strings::PROGRAM_NAME;
 use crate::ui::GtkUi;
-use epitok::{auth::Auth, event::Event};
+use epitok::{
+    auth::{Auth, Status},
+    event::Event,
+};
 use gtk::*;
 use std::{cell::RefCell, rc::Rc};
 
@@ -9,6 +12,7 @@ pub struct App {
     pub ui: Rc<GtkUi>,
     pub auth: Rc<RefCell<Auth>>,
     pub events: Rc<RefCell<Vec<Event>>>,
+    pub storage: Storage,
 }
 
 impl App {
@@ -23,12 +27,28 @@ impl App {
         let auth = Rc::new(RefCell::new(Auth::new()));
         let events = Rc::new(RefCell::new(Vec::new()));
         let ui = Rc::new(GtkUi::new());
+        let storage = Storage::new();
 
-        Self { auth, events, ui }
+        Self {
+            auth,
+            events,
+            ui,
+            storage,
+        }
     }
 
-    pub fn load_settings(self) -> Self {
-        load();
+    pub fn load_settings(mut self) -> Self {
+        self.storage.load();
+
+        let autologin = self.storage.autologin.clone();
+        if let Some(autologin) = autologin {
+            if let Ok(mut auth) = self.auth.try_borrow_mut() {
+                match auth.sign_in(&autologin) {
+                    Ok(()) => (),
+                    Err(e) => eprintln!("error: {}", e),
+                }
+            }
+        }
 
         self
     }
@@ -48,9 +68,14 @@ impl App {
         self
     }
 
-    pub fn save_settings(self) {
+    pub fn save_settings(&mut self) {
         if let Ok(auth) = self.auth.try_borrow() {
-            save(auth.autologin());
+            self.storage.autologin = auth.autologin().to_owned();
+            self.storage.online_status = match auth.status() {
+                Status::SignedIn => true,
+                _ => false,
+            };
         }
+        self.storage.save();
     }
 }
