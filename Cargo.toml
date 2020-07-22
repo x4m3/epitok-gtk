@@ -15,5 +15,6 @@ glib = "0.10.1"
 
 # settings storage
 directories-next = "1.0.1"
-#toml = "0.5.6"
-#serde_derive = "1.0.114"
+toml = "0.5.6"
+serde_derive = "1.0.114"
+serde = "1.0.114"
