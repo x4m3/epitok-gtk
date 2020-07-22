@@ -2,6 +2,7 @@ use crate::strings::{APPLICATION, ORGANIZATION, QUALIFIER};
 use directories_next::ProjectDirs;
 use serde_derive::Serialize;
 use std::{
+    error::Error,
     fs::{create_dir_all, File},
     io::Write,
     path::PathBuf,
@@ -24,55 +25,30 @@ impl Storage {
     pub fn load(&mut self) {
         if let Some(mut path) = get_config_path() {
             append_filename(&mut path);
-            println!("loading from path {:?}", path);
-            println!("does {:?} exist: {}", path, path.exists());
             // read the file and deserialize content
         }
     }
 
-    pub fn save(&mut self) {
-        if let Some(mut path) = get_config_path() {
-            // Create output to write
-            let output = match toml::to_string(&self) {
-                Ok(output) => output,
-                Err(e) => {
-                    eprintln!("error when converting to TOML: {}", e);
-                    return;
-                }
-            };
+    pub fn save(&mut self) -> Result<(), Box<dyn Error>> {
+        // Get base path
+        let mut path = get_config_path().ok_or("Failed to get base configuration path")?;
 
-            println!("saving to path {:?}", path);
+        // Serialize struct to TOML
+        let output = toml::to_string(&self)?;
 
-            // Check if folder exists, otherwise create parent folders
-            match create_dir_all(&path) {
-                Ok(()) => (),
-                Err(e) => {
-                    eprintln!("error when creating folder: {}", e);
-                    return;
-                }
-            }
+        // Check if folder exists, otherwise create parent folders
+        create_dir_all(&path)?;
 
-            // Add filename to path
-            append_filename(&mut path);
+        // Add filename to path
+        append_filename(&mut path);
 
-            // Create file if does not exist
-            let mut file = match File::create(path) {
-                Ok(file) => file,
-                Err(e) => {
-                    eprintln!("error when creating file: {}", e);
-                    return;
-                }
-            };
+        // Create file if does not exist
+        let mut file = File::create(path)?;
 
-            // Write to file
-            match file.write_all(output.as_bytes()) {
-                Ok(()) => (),
-                Err(e) => {
-                    eprintln!("error when writing to file: {}", e);
-                    return;
-                }
-            }
-        }
+        // Write to file
+        file.write_all(output.as_bytes())?;
+
+        Ok(())
     }
 }
 

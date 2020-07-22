@@ -76,6 +76,8 @@ impl App {
                 _ => false,
             };
         }
-        self.storage.save();
+        if let Err(e) = self.storage.save() {
+            eprintln!("failed to save configuration: {}", e);
+        }
     }
 }
