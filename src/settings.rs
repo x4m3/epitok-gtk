@@ -98,7 +98,9 @@ impl App {
             window.set_title("Settings");
             window.set_default_size(525, 300);
             window.set_transient_for(Some(&parent_window)); // Set which window is the parent
-            window.set_modal(true); // Can't interact with parent window
+            window.set_position(WindowPosition::CenterOnParent); // Settings window will open in center of main window
+            // window.set_modal(true); // Can't interact with parent window
+            window.set_destroy_with_parent(true); // Destroy window if main window is destroyed
 
             let container = Box::new(Orientation::Vertical, 0);
             let status = create_status_label(auth.clone());
