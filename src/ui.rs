@@ -3,7 +3,7 @@ use crate::header::Header;
 use crate::strings::{PROGRAM_ID, PROGRAM_NAME};
 use epitok::auth::Auth;
 use gtk::*;
-use std::{cell::RefCell, rc::Rc};
+use std::cell::RefCell;
 
 pub struct GtkUi {
     pub window: Window,
@@ -12,7 +12,7 @@ pub struct GtkUi {
 }
 
 impl GtkUi {
-    pub fn new(auth: &Rc<RefCell<Auth>>) -> Self {
+    pub fn new(auth: &RefCell<Auth>) -> Self {
         let window = Window::new(WindowType::Toplevel);
         let header = Header::new(auth);
         let content = Content::new();

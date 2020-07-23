@@ -37,7 +37,7 @@ impl App {
     fn try_load_config(auth: &Rc<RefCell<Auth>>) -> Storage {
         // Attempt to load configuration
         // If attempt fails, return an empty configuration
-        let new = match Storage::load() {
+        let storage = match Storage::load() {
             Ok(new) => new,
             Err(e) => {
                 eprintln!("Failed to load configuration: {}", e);
@@ -47,7 +47,7 @@ impl App {
 
         // Configuration has been loaded
         // Attempt to sign in
-        let autologin = new.autologin.clone();
+        let autologin = storage.autologin.clone();
         if let Some(autologin) = autologin {
             if let Ok(mut auth) = auth.try_borrow_mut() {
                 match auth.sign_in(&autologin) {
@@ -57,7 +57,7 @@ impl App {
             }
         };
 
-        new
+        storage
     }
 
     pub fn connect_events(self) -> Self {
