@@ -34,8 +34,7 @@ fn create_action_button(auth: Rc<RefCell<Auth>>) -> Button {
     if let Ok(auth) = auth.try_borrow() {
         match auth.status() {
             Status::SignedIn => button.set_label("Sign out"),
-            Status::Error(_) => button.set_label("Sign out"),
-            Status::SignedOut => button.set_label("Sign in"),
+            _ => button.set_label("Sign in"),
         }
     }
     button
