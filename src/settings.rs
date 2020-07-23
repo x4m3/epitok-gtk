@@ -47,14 +47,15 @@ fn sign_in(
     input: Entry,
     header_container: HeaderBar,
 ) {
-    // Attempt to get current autologin
-    // On failure, get text from input
-    let input_str = match auth.autologin() {
-        Some(autologin) => autologin.to_string(),
-        None => input.get_buffer().get_text(),
-    };
+    // Get text from input
+    // If empty, attempt to get current autologin
+    // If also empty, exit
+    let mut input_str = input.get_buffer().get_text();
     if input_str.is_empty() {
-        return;
+        match auth.autologin() {
+            Some(autologin) => input_str = autologin.to_string(),
+            None => return,
+        };
     }
 
     match auth.sign_in(&input_str) {
@@ -122,11 +123,7 @@ impl App {
 
             // If we are already signed in don't show entry
             if let Ok(auth) = auth.try_borrow() {
-                match auth.status() {
-                    Status::SignedIn => input.hide(),
-                    Status::Error(_) => input.hide(),
-                    _ => (),
-                }
+                if let Status::SignedIn = auth.status() { input.hide() }
             }
 
             // When action button is clicked
