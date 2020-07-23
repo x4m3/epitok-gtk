@@ -23,8 +23,8 @@ impl App {
 
         let auth = Rc::new(RefCell::new(Auth::new()));
         let events = Rc::new(RefCell::new(Vec::new()));
-        let ui = Rc::new(GtkUi::new());
         let storage = Self::try_load_config(&auth);
+        let ui = Rc::new(GtkUi::new(&auth));
 
         Self {
             auth,
@@ -76,10 +76,13 @@ impl App {
     }
 
     pub fn save_settings(&mut self) {
+        // Get current autologin
         if let Ok(auth) = self.auth.try_borrow() {
             self.storage.autologin = auth.autologin().to_owned();
             println!("saving autologin: {:?}", self.storage.autologin);
         }
+
+        // Save configuration
         if let Err(e) = self.storage.save() {
             eprintln!("failed to save configuration: {}", e);
         }

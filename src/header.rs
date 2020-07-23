@@ -1,6 +1,7 @@
 use crate::app::App;
-use epitok::event::list_events_today;
+use epitok::{auth::Auth, event::list_events_today};
 use gtk::*;
+use std::cell::RefCell;
 
 pub struct Header {
     pub container: HeaderBar,
@@ -11,8 +12,15 @@ pub struct Header {
 }
 
 impl Header {
-    pub fn new() -> Self {
+    pub fn new(auth: &RefCell<Auth>) -> Self {
         let container = HeaderBar::new();
+
+        // If user is logged in, set its login in menu bar
+        if let Ok(auth) = auth.try_borrow() {
+            if let Some(login) = auth.login() {
+                container.set_subtitle(Some(login));
+            }
+        }
 
         let refresh = Button::from_icon_name("view-refresh-symbolic".into(), IconSize::Button);
         let spinner = Spinner::new();

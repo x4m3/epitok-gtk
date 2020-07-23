@@ -1,7 +1,9 @@
 use crate::content::Content;
 use crate::header::Header;
 use crate::strings::{PROGRAM_ID, PROGRAM_NAME};
+use epitok::auth::Auth;
 use gtk::*;
+use std::{cell::RefCell, rc::Rc};
 
 pub struct GtkUi {
     pub window: Window,
@@ -10,9 +12,9 @@ pub struct GtkUi {
 }
 
 impl GtkUi {
-    pub fn new() -> Self {
+    pub fn new(auth: &Rc<RefCell<Auth>>) -> Self {
         let window = Window::new(WindowType::Toplevel);
-        let header = Header::new();
+        let header = Header::new(auth);
         let content = Content::new();
 
         window.set_titlebar(Some(&header.container));
