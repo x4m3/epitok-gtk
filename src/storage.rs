@@ -10,16 +10,12 @@ use std::{
 
 #[derive(Serialize, Deserialize)]
 pub struct Storage {
-    pub online_status: bool,
     pub autologin: Option<String>,
 }
 
 impl Storage {
     pub fn new() -> Self {
-        Self {
-            online_status: false,
-            autologin: None,
-        }
+        Self { autologin: None }
     }
 
     pub fn load() -> Result<Self, Box<dyn Error>> {

@@ -34,7 +34,8 @@ fn create_action_button(auth: Rc<RefCell<Auth>>) -> Button {
     if let Ok(auth) = auth.try_borrow() {
         match auth.status() {
             Status::SignedIn => button.set_label("Sign out"),
-            _ => button.set_label("Sign in"),
+            Status::Error(_) => button.set_label("Sign out"),
+            Status::SignedOut => button.set_label("Sign in"),
         }
     }
     button
@@ -114,7 +115,11 @@ impl App {
 
             // If we are already signed in don't show entry
             if let Ok(auth) = auth.try_borrow() {
-                if let Status::SignedIn = auth.status() { input.hide() }
+                match auth.status() {
+                    Status::SignedIn => input.hide(),
+                    Status::Error(_) => input.hide(),
+                    _ => (),
+                }
             }
 
             // When action button is clicked

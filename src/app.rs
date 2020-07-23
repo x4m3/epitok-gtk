@@ -1,10 +1,7 @@
 use crate::storage::Storage;
 use crate::strings::PROGRAM_NAME;
 use crate::ui::GtkUi;
-use epitok::{
-    auth::{Auth, Status},
-    event::Event,
-};
+use epitok::{auth::Auth, event::Event};
 use gtk::*;
 use std::{cell::RefCell, rc::Rc};
 
@@ -81,10 +78,7 @@ impl App {
     pub fn save_settings(&mut self) {
         if let Ok(auth) = self.auth.try_borrow() {
             self.storage.autologin = auth.autologin().to_owned();
-            self.storage.online_status = match auth.status() {
-                Status::SignedIn => true,
-                _ => false,
-            };
+            println!("saving autologin: {:?}", self.storage.autologin);
         }
         if let Err(e) = self.storage.save() {
             eprintln!("failed to save configuration: {}", e);
