@@ -47,10 +47,16 @@ fn sign_in(
     input: Entry,
     header_container: HeaderBar,
 ) {
-    let input_str = input.get_buffer().get_text();
+    // Attempt to get current autologin
+    // On failure, get text from input
+    let input_str = match auth.autologin() {
+        Some(autologin) => autologin.to_string(),
+        None => input.get_buffer().get_text(),
+    };
     if input_str.is_empty() {
         return;
     }
+
     match auth.sign_in(&input_str) {
         Ok(()) => {
             match auth.login() {

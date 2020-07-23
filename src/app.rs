@@ -52,7 +52,7 @@ impl App {
             if let Ok(mut auth) = auth.try_borrow_mut() {
                 match auth.sign_in(&autologin) {
                     Ok(()) => (),
-                    Err(e) => eprintln!("error: {}", e),
+                    Err(e) => eprintln!("error when signing in: {}", e),
                 }
             }
         };
@@ -79,7 +79,6 @@ impl App {
         // Get current autologin
         if let Ok(auth) = self.auth.try_borrow() {
             self.storage.autologin = auth.autologin().to_owned();
-            println!("saving autologin: {:?}", self.storage.autologin);
         }
 
         // Save configuration
