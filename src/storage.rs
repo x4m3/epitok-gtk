@@ -1,14 +1,14 @@
 use crate::strings::{APPLICATION, ORGANIZATION, QUALIFIER};
 use directories_next::ProjectDirs;
-use serde_derive::Serialize;
+use serde_derive::{Deserialize, Serialize};
 use std::{
     error::Error,
     fs::{create_dir_all, File},
-    io::Write,
+    io::{Read, Write},
     path::PathBuf,
 };
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Storage {
     pub online_status: bool,
     pub autologin: Option<String>,
@@ -22,11 +22,21 @@ impl Storage {
         }
     }
 
-    pub fn load(&mut self) {
-        if let Some(mut path) = get_config_path() {
-            append_filename(&mut path);
-            // read the file and deserialize content
-        }
+    pub fn load() -> Result<Self, Box<dyn Error>> {
+        let mut path = get_config_path().ok_or("Failed to get base configuration path")?;
+
+        // Add filename to path
+        append_filename(&mut path);
+
+        // Read config file into string
+        let mut file = File::open(path)?;
+        let mut content = String::new();
+        file.read_to_string(&mut content)?;
+
+        // Deserialize into struct
+        let new = toml::from_str(&content)?;
+
+        Ok(new)
     }
 
     pub fn save(&mut self) -> Result<(), Box<dyn Error>> {

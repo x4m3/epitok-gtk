@@ -27,7 +27,7 @@ impl App {
         let auth = Rc::new(RefCell::new(Auth::new()));
         let events = Rc::new(RefCell::new(Vec::new()));
         let ui = Rc::new(GtkUi::new());
-        let storage = Storage::new();
+        let storage = Self::try_load_config(&auth);
 
         Self {
             auth,
@@ -37,20 +37,30 @@ impl App {
         }
     }
 
-    pub fn load_settings(mut self) -> Self {
-        self.storage.load();
+    fn try_load_config(auth: &Rc<RefCell<Auth>>) -> Storage {
+        // Attempt to load configuration
+        // If attempt fails, return an empty configuration
+        let new = match Storage::load() {
+            Ok(new) => new,
+            Err(e) => {
+                eprintln!("Failed to load configuration: {}", e);
+                Storage::new()
+            }
+        };
 
-        let autologin = self.storage.autologin.clone();
+        // Configuration has been loaded
+        // Attempt to sign in
+        let autologin = new.autologin.clone();
         if let Some(autologin) = autologin {
-            if let Ok(mut auth) = self.auth.try_borrow_mut() {
+            if let Ok(mut auth) = auth.try_borrow_mut() {
                 match auth.sign_in(&autologin) {
                     Ok(()) => (),
                     Err(e) => eprintln!("error: {}", e),
                 }
             }
-        }
+        };
 
-        self
+        new
     }
 
     pub fn connect_events(self) -> Self {
