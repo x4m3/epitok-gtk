@@ -53,7 +53,6 @@ impl App {
             ui.header.refresh.set_sensitive(false);
             ui.header.spinner.start();
 
-            // TODO: make epitok lib async to actually see the spinner when it's refreshing
             if let Ok(auth) = auth.try_borrow() {
                 if let Ok(mut events) = events.try_borrow_mut() {
                     match list_events_today(&mut events, auth.autologin()) {
