@@ -41,6 +41,35 @@ impl Content {
 impl Events {
     pub fn new() -> Self {
         let container = Box::new(Orientation::Vertical, 0);
+        let scrolled_window = ScrolledWindow::new::<Adjustment, Adjustment>(None, None);
+        let list_box = ListBox::new();
+
+        let list_box_row = ListBoxRow::new();
+        let list_box_row_box = Box::new(Orientation::Horizontal, 0);
+        let label = Label::new(None);
+        label.set_markup("<b>14:00 - 14:30</b>: B2 - Unix System programming - KickOff - Navy");
+        list_box_row_box.add(&label);
+        list_box_row.add(&list_box_row_box);
+        list_box.add(&list_box_row);
+
+        let list_box_row1 = ListBoxRow::new();
+        let list_box_row_box1 = Box::new(Orientation::Horizontal, 0);
+        let label1 = Label::new(None);
+        label1.set_markup("<b>14:00 - 14:30</b>: B2 - Unix System programming - Unit Kick-off");
+        list_box_row_box1.add(&label1);
+        list_box_row1.add(&list_box_row_box1);
+        list_box.add(&list_box_row1);
+
+        let list_box_row2 = ListBoxRow::new();
+        let list_box_row_box2 = Box::new(Orientation::Horizontal, 0);
+        let label2 = Label::new(None);
+        label2.set_markup("<b>14:30 - 17:30</b>: B2 - Unix System programming - Bootstrap - Navy");
+        list_box_row_box2.add(&label2);
+        list_box_row2.add(&list_box_row_box2);
+        list_box.add(&list_box_row2);
+
+        scrolled_window.add(&list_box);
+        container.pack_start(&scrolled_window, true, true, 0);
 
         Self { container }
     }
