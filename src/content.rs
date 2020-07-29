@@ -20,11 +20,14 @@ pub struct Students {
 
 impl Content {
     pub fn new() -> Self {
-        let container = Box::new(Orientation::Vertical, 0);
+        let container_orientation = Orientation::Vertical;
+        let container = Box::new(container_orientation, 0);
         let events = Events::new();
+        let separator = Separator::new(container_orientation);
         let students = Students::new();
 
         container.pack_start(&events.container, true, true, 0);
+        container.pack_start(&separator, false, false, 0);
         container.pack_end(&students.container, true, true, 0);
 
         Self {
