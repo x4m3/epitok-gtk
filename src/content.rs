@@ -79,6 +79,64 @@ impl Events {
 impl Students {
     pub fn new() -> Self {
         let container = Box::new(Orientation::Vertical, 0);
+        let scrolled_window = ScrolledWindow::new::<Adjustment, Adjustment>(None, None);
+        let list_box = ListBox::new();
+
+        let list_box_row1 = ListBoxRow::new();
+        let list_box_row_box1 = Box::new(Orientation::Horizontal, 0);
+        let label1 = Label::new(None);
+        label1.set_label("philippe.loctaux@epitech.eu");
+        list_box_row_box1.pack_start(&label1, false, false, 0);
+        let button1_1 = Button::with_label("Missing");
+        list_box_row_box1.pack_end(&button1_1, false, false, 0);
+        let separator1 = Separator::new(Orientation::Horizontal);
+        list_box_row_box1.pack_end(&separator1, false, false, 2);
+        let button1_2 = Button::with_label("Present");
+        list_box_row_box1.pack_end(&button1_2, false, false, 0);
+        list_box_row1.add(&list_box_row_box1);
+        list_box.add(&list_box_row1);
+
+        let list_box_row2 = ListBoxRow::new();
+        let list_box_row_box2 = Box::new(Orientation::Horizontal, 0);
+        let label2 = Label::new(None);
+        label2.set_label("theo.boscher@epitech.eu");
+        list_box_row_box2.add(&label2);
+        let button2_1 = Button::with_label("Missing");
+        list_box_row_box2.pack_end(&button2_1, false, false, 0);
+        let separator2 = Separator::new(Orientation::Horizontal);
+        list_box_row_box2.pack_end(&separator2, false, false, 2);
+        let button2_2 = Button::with_label("Present");
+        list_box_row_box2.pack_end(&button2_2, false, false, 0);
+        list_box_row2.add(&list_box_row_box2);
+        list_box.add(&list_box_row2);
+
+        let list_box_row3 = ListBoxRow::new();
+        let list_box_row_box3 = Box::new(Orientation::Horizontal, 0);
+        let label3 = Label::new(None);
+        label3.set_label("francois.lelay@epitech.eu");
+        list_box_row_box3.add(&label3);
+        let button3_1 = Button::with_label("Missing");
+        list_box_row_box3.pack_end(&button3_1, false, false, 0);
+        let separator3 = Separator::new(Orientation::Horizontal);
+        list_box_row_box3.pack_end(&separator3, false, false, 2);
+        let button3_2 = Button::with_label("Present");
+        list_box_row_box3.pack_end(&button3_2, false, false, 0);
+        list_box_row3.add(&list_box_row_box3);
+        list_box.add(&list_box_row3);
+
+        let list_box_row4 = ListBoxRow::new();
+        let list_box_row_box4 = Box::new(Orientation::Horizontal, 0);
+        let label4 = Label::new(None);
+        label4.set_label("alexandre1.wagner@epitech.eu");
+        list_box_row_box4.add(&label4);
+        let button4_1 = Button::with_label("Missing");
+        list_box_row_box4.pack_end(&button4_1, false, false, 0);
+        let separator4 = Separator::new(Orientation::Horizontal);
+        list_box_row_box4.pack_end(&separator4, false, false, 2);
+        let button4_2 = Button::with_label("Present");
+        list_box_row_box4.pack_end(&button4_2, false, false, 0);
+        list_box_row4.add(&list_box_row_box4);
+        list_box.add(&list_box_row4);
 
         let action_bar = ActionBar::new();
 
@@ -96,6 +154,8 @@ impl Students {
         let set_remaining_missing = Button::with_label("Set remaining as missing");
         action_bar.pack_end(&set_remaining_missing);
 
+        scrolled_window.add(&list_box);
+        container.pack_start(&scrolled_window, true, true, 0);
         container.pack_end(&action_bar, false, false, 0);
 
         Self {
