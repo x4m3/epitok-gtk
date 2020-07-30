@@ -16,6 +16,7 @@ pub struct Students {
     pub start_scan: Button,
     pub save: Button,
     pub reset: Button,
+    pub set_remaining_missing: Button,
 }
 
 impl Content {
@@ -92,6 +93,9 @@ impl Students {
         save.get_style_context().add_class("suggested-action");
         action_bar.pack_end(&save);
 
+        let set_remaining_missing = Button::with_label("Set remaining as missing");
+        action_bar.pack_end(&set_remaining_missing);
+
         container.pack_end(&action_bar, false, false, 0);
 
         Self {
@@ -100,6 +104,7 @@ impl Students {
             start_scan,
             save,
             reset,
+            set_remaining_missing,
         }
     }
 }
