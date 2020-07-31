@@ -13,6 +13,7 @@ pub struct Events {
 
 pub struct Students {
     pub container: Box,
+    pub list_box_rows: Vec<ListBoxRow>,
     pub action_bar: ActionBar,
     pub start_scan: Button,
     pub save: Button,
@@ -84,77 +85,34 @@ impl Students {
         let scrolled_window = ScrolledWindow::new::<Adjustment, Adjustment>(None, None);
         let list_box = ListBox::new();
 
-        let list_box_row1 = ListBoxRow::new();
-        let list_box_row_box1 = Box::new(Orientation::Horizontal, 0);
-        let label1 = Label::new(None);
-        label1.set_label("philippe.loctaux@epitech.eu");
-        list_box_row_box1.pack_start(&label1, false, false, 0);
-        let button1_1 = ToggleButton::with_label("Present");
-        list_box_row_box1.pack_end(&button1_1, false, false, 0);
-        let button1_2 = ToggleButton::with_label("Missing");
-        list_box_row_box1.pack_end(&button1_2, false, false, 0);
-        let button1_3 = ToggleButton::with_label("N/A");
-        list_box_row_box1.pack_end(&button1_3, false, false, 0);
-        let button1_4 = ToggleButton::with_label("None");
-        button1_4.set_active(true);
-        button1_4.set_sensitive(false);
-        list_box_row_box1.pack_end(&button1_4, false, false, 0);
-        list_box_row1.add(&list_box_row_box1);
-        list_box.add(&list_box_row1);
+        let mut vec_strings: Vec<String> = Vec::new();
+        vec_strings.push("philippe.loctaux@epitech.eu".into());
+        vec_strings.push("theo.boscher@epitech.eu".into());
+        vec_strings.push("francois.lelay@epitech.eu".into());
+        vec_strings.push("alexandre1.wagner@epitech.eu".into());
 
-        let list_box_row2 = ListBoxRow::new();
-        let list_box_row_box2 = Box::new(Orientation::Horizontal, 0);
-        let label2 = Label::new(None);
-        label2.set_label("theo.boscher@epitech.eu");
-        list_box_row_box2.add(&label2);
-        let button2_1 = ToggleButton::with_label("Present");
-        list_box_row_box2.pack_end(&button2_1, false, false, 0);
-        let button2_2 = ToggleButton::with_label("Missing");
-        list_box_row_box2.pack_end(&button2_2, false, false, 0);
-        let button2_3 = ToggleButton::with_label("N/A");
-        list_box_row_box2.pack_end(&button2_3, false, false, 0);
-        let button2_4 = ToggleButton::with_label("None");
-        button2_4.set_active(true);
-        button2_4.set_sensitive(false);
-        list_box_row_box2.pack_end(&button2_4, false, false, 0);
-        list_box_row2.add(&list_box_row_box2);
-        list_box.add(&list_box_row2);
+        let mut list_box_rows: Vec<ListBoxRow> = Vec::new();
 
-        let list_box_row3 = ListBoxRow::new();
-        let list_box_row_box3 = Box::new(Orientation::Horizontal, 0);
-        let label3 = Label::new(None);
-        label3.set_label("francois.lelay@epitech.eu");
-        list_box_row_box3.add(&label3);
-        let button3_1 = ToggleButton::with_label("Present");
-        list_box_row_box3.pack_end(&button3_1, false, false, 0);
-        let button3_2 = ToggleButton::with_label("Missing");
-        list_box_row_box3.pack_end(&button3_2, false, false, 0);
-        let button3_3 = ToggleButton::with_label("N/A");
-        list_box_row_box3.pack_end(&button3_3, false, false, 0);
-        let button3_4 = ToggleButton::with_label("None");
-        button3_4.set_active(true);
-        button3_4.set_sensitive(false);
-        list_box_row_box3.pack_end(&button3_4, false, false, 0);
-        list_box_row3.add(&list_box_row_box3);
-        list_box.add(&list_box_row3);
+        for student in vec_strings {
+            let list_box_row = ListBoxRow::new();
+            let list_box_row_box = Box::new(Orientation::Horizontal, 0);
+            let label_student = Label::new(Some(student.as_str()));
+            list_box_row_box.pack_start(&label_student, false, false, 0);
+            let button1_1 = ToggleButton::with_label("Present");
+            list_box_row_box.pack_end(&button1_1, false, false, 0);
+            let button1_2 = ToggleButton::with_label("Missing");
+            list_box_row_box.pack_end(&button1_2, false, false, 0);
+            let button1_3 = ToggleButton::with_label("N/A");
+            list_box_row_box.pack_end(&button1_3, false, false, 0);
+            let button1_4 = ToggleButton::with_label("None");
+            button1_4.set_active(true);
+            button1_4.set_sensitive(false);
+            list_box_row_box.pack_end(&button1_4, false, false, 0);
+            list_box_row.add(&list_box_row_box);
+            list_box.add(&list_box_row);
 
-        let list_box_row4 = ListBoxRow::new();
-        let list_box_row_box4 = Box::new(Orientation::Horizontal, 0);
-        let label4 = Label::new(None);
-        label4.set_label("alexandre1.wagner@epitech.eu");
-        list_box_row_box4.add(&label4);
-        let button4_1 = ToggleButton::with_label("Present");
-        list_box_row_box4.pack_end(&button4_1, false, false, 0);
-        let button4_2 = ToggleButton::with_label("Missing");
-        list_box_row_box4.pack_end(&button4_2, false, false, 0);
-        let button4_3 = ToggleButton::with_label("N/A");
-        list_box_row_box4.pack_end(&button4_3, false, false, 0);
-        let button4_4 = ToggleButton::with_label("None");
-        button4_4.set_active(true);
-        button4_4.set_sensitive(false);
-        list_box_row_box4.pack_end(&button4_4, false, false, 0);
-        list_box_row4.add(&list_box_row_box4);
-        list_box.add(&list_box_row4);
+            list_box_rows.push(list_box_row);
+        }
 
         let action_bar = ActionBar::new();
 
@@ -178,6 +136,7 @@ impl Students {
 
         Self {
             container,
+            list_box_rows,
             action_bar,
             start_scan,
             save,
