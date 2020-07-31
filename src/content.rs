@@ -8,6 +8,7 @@ pub struct Content {
 
 pub struct Events {
     pub container: Box,
+    pub list_box_rows: Vec<ListBoxRow>,
 }
 
 pub struct Students {
@@ -45,34 +46,35 @@ impl Events {
         let scrolled_window = ScrolledWindow::new::<Adjustment, Adjustment>(None, None);
         let list_box = ListBox::new();
 
-        let list_box_row = ListBoxRow::new();
-        let list_box_row_box = Box::new(Orientation::Horizontal, 0);
-        let label = Label::new(None);
-        label.set_markup("<b>14:00 - 14:30</b>: B2 - Unix System programming - KickOff - Navy");
-        list_box_row_box.add(&label);
-        list_box_row.add(&list_box_row_box);
-        list_box.add(&list_box_row);
+        let mut vec_strings: Vec<String> = Vec::new();
+        vec_strings
+            .push("<b>14:00 - 14:30</b>: B2 - Unix System programming - KickOff - Navy".into());
+        vec_strings
+            .push("<b>14:00 - 14:30</b>: B2 - Unix System programming - Unit Kick-off".into());
+        vec_strings
+            .push("<b>14:30 - 17:30</b>: B2 - Unix System programming - Bootstrap - Navy".into());
 
-        let list_box_row1 = ListBoxRow::new();
-        let list_box_row_box1 = Box::new(Orientation::Horizontal, 0);
-        let label1 = Label::new(None);
-        label1.set_markup("<b>14:00 - 14:30</b>: B2 - Unix System programming - Unit Kick-off");
-        list_box_row_box1.add(&label1);
-        list_box_row1.add(&list_box_row_box1);
-        list_box.add(&list_box_row1);
+        let mut list_box_rows: Vec<ListBoxRow> = Vec::new();
 
-        let list_box_row2 = ListBoxRow::new();
-        let list_box_row_box2 = Box::new(Orientation::Horizontal, 0);
-        let label2 = Label::new(None);
-        label2.set_markup("<b>14:30 - 17:30</b>: B2 - Unix System programming - Bootstrap - Navy");
-        list_box_row_box2.add(&label2);
-        list_box_row2.add(&list_box_row_box2);
-        list_box.add(&list_box_row2);
+        for event in vec_strings {
+            let list_box_row = ListBoxRow::new();
+            let list_box_row_box = Box::new(Orientation::Horizontal, 0);
+            let label = Label::new(None);
+            label.set_markup(event.as_str());
+            list_box_row_box.add(&label);
+            list_box_row.add(&list_box_row_box);
+            list_box.add(&list_box_row);
+
+            list_box_rows.push(list_box_row);
+        }
 
         scrolled_window.add(&list_box);
         container.pack_start(&scrolled_window, true, true, 0);
 
-        Self { container }
+        Self {
+            container,
+            list_box_rows,
+        }
     }
 }
 
