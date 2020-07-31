@@ -87,12 +87,14 @@ impl Students {
         let label1 = Label::new(None);
         label1.set_label("philippe.loctaux@epitech.eu");
         list_box_row_box1.pack_start(&label1, false, false, 0);
-        let button1_1 = Button::with_label("Missing");
+        let button1_1 = Button::with_label("Present");
         list_box_row_box1.pack_end(&button1_1, false, false, 0);
-        let separator1 = Separator::new(Orientation::Horizontal);
-        list_box_row_box1.pack_end(&separator1, false, false, 2);
-        let button1_2 = Button::with_label("Present");
+        let button1_2 = Button::with_label("Missing");
         list_box_row_box1.pack_end(&button1_2, false, false, 0);
+        let button1_3 = Button::with_label("N/A");
+        list_box_row_box1.pack_end(&button1_3, false, false, 0);
+        let button1_4 = Button::with_label("None");
+        list_box_row_box1.pack_end(&button1_4, false, false, 0);
         list_box_row1.add(&list_box_row_box1);
         list_box.add(&list_box_row1);
 
@@ -101,12 +103,14 @@ impl Students {
         let label2 = Label::new(None);
         label2.set_label("theo.boscher@epitech.eu");
         list_box_row_box2.add(&label2);
-        let button2_1 = Button::with_label("Missing");
+        let button2_1 = Button::with_label("Present");
         list_box_row_box2.pack_end(&button2_1, false, false, 0);
-        let separator2 = Separator::new(Orientation::Horizontal);
-        list_box_row_box2.pack_end(&separator2, false, false, 2);
-        let button2_2 = Button::with_label("Present");
+        let button2_2 = Button::with_label("Missing");
         list_box_row_box2.pack_end(&button2_2, false, false, 0);
+        let button2_3 = Button::with_label("N/A");
+        list_box_row_box2.pack_end(&button2_3, false, false, 0);
+        let button2_4 = Button::with_label("None");
+        list_box_row_box2.pack_end(&button2_4, false, false, 0);
         list_box_row2.add(&list_box_row_box2);
         list_box.add(&list_box_row2);
 
@@ -115,12 +119,14 @@ impl Students {
         let label3 = Label::new(None);
         label3.set_label("francois.lelay@epitech.eu");
         list_box_row_box3.add(&label3);
-        let button3_1 = Button::with_label("Missing");
+        let button3_1 = Button::with_label("Present");
         list_box_row_box3.pack_end(&button3_1, false, false, 0);
-        let separator3 = Separator::new(Orientation::Horizontal);
-        list_box_row_box3.pack_end(&separator3, false, false, 2);
-        let button3_2 = Button::with_label("Present");
+        let button3_2 = Button::with_label("Missing");
         list_box_row_box3.pack_end(&button3_2, false, false, 0);
+        let button3_3 = Button::with_label("N/A");
+        list_box_row_box3.pack_end(&button3_3, false, false, 0);
+        let button3_4 = Button::with_label("None");
+        list_box_row_box3.pack_end(&button3_4, false, false, 0);
         list_box_row3.add(&list_box_row_box3);
         list_box.add(&list_box_row3);
 
@@ -129,12 +135,14 @@ impl Students {
         let label4 = Label::new(None);
         label4.set_label("alexandre1.wagner@epitech.eu");
         list_box_row_box4.add(&label4);
-        let button4_1 = Button::with_label("Missing");
+        let button4_1 = Button::with_label("Present");
         list_box_row_box4.pack_end(&button4_1, false, false, 0);
-        let separator4 = Separator::new(Orientation::Horizontal);
-        list_box_row_box4.pack_end(&separator4, false, false, 2);
-        let button4_2 = Button::with_label("Present");
+        let button4_2 = Button::with_label("Missing");
         list_box_row_box4.pack_end(&button4_2, false, false, 0);
+        let button4_3 = Button::with_label("N/A");
+        list_box_row_box4.pack_end(&button4_3, false, false, 0);
+        let button4_4 = Button::with_label("None");
+        list_box_row_box4.pack_end(&button4_4, false, false, 0);
         list_box_row4.add(&list_box_row_box4);
         list_box.add(&list_box_row4);
 
