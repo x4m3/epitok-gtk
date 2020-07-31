@@ -94,6 +94,8 @@ impl Students {
         let button1_3 = ToggleButton::with_label("N/A");
         list_box_row_box1.pack_end(&button1_3, false, false, 0);
         let button1_4 = ToggleButton::with_label("None");
+        button1_4.set_active(true);
+        button1_4.set_sensitive(false);
         list_box_row_box1.pack_end(&button1_4, false, false, 0);
         list_box_row1.add(&list_box_row_box1);
         list_box.add(&list_box_row1);
@@ -110,6 +112,8 @@ impl Students {
         let button2_3 = ToggleButton::with_label("N/A");
         list_box_row_box2.pack_end(&button2_3, false, false, 0);
         let button2_4 = ToggleButton::with_label("None");
+        button2_4.set_active(true);
+        button2_4.set_sensitive(false);
         list_box_row_box2.pack_end(&button2_4, false, false, 0);
         list_box_row2.add(&list_box_row_box2);
         list_box.add(&list_box_row2);
@@ -126,6 +130,8 @@ impl Students {
         let button3_3 = ToggleButton::with_label("N/A");
         list_box_row_box3.pack_end(&button3_3, false, false, 0);
         let button3_4 = ToggleButton::with_label("None");
+        button3_4.set_active(true);
+        button3_4.set_sensitive(false);
         list_box_row_box3.pack_end(&button3_4, false, false, 0);
         list_box_row3.add(&list_box_row_box3);
         list_box.add(&list_box_row3);
@@ -142,6 +148,8 @@ impl Students {
         let button4_3 = ToggleButton::with_label("N/A");
         list_box_row_box4.pack_end(&button4_3, false, false, 0);
         let button4_4 = ToggleButton::with_label("None");
+        button4_4.set_active(true);
+        button4_4.set_sensitive(false);
         list_box_row_box4.pack_end(&button4_4, false, false, 0);
         list_box_row4.add(&list_box_row_box4);
         list_box.add(&list_box_row4);
