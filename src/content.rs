@@ -104,33 +104,6 @@ impl Students {
         let list_box = ListBox::new();
         let list_box_rows: Vec<ListBoxRow> = Vec::new();
 
-        // let mut vec_strings: Vec<String> = Vec::new();
-        // vec_strings.push("philippe.loctaux@epitech.eu".into());
-        // vec_strings.push("theo.boscher@epitech.eu".into());
-        // vec_strings.push("francois.lelay@epitech.eu".into());
-        // vec_strings.push("alexandre1.wagner@epitech.eu".into());
-        //
-        // for student in vec_strings {
-        //     let list_box_row = ListBoxRow::new();
-        //     let list_box_row_box = Box::new(Orientation::Horizontal, 0);
-        //     let label_student = Label::new(Some(student.as_str()));
-        //     list_box_row_box.pack_start(&label_student, false, false, 0);
-        //     let button1_1 = ToggleButton::with_label("Present");
-        //     list_box_row_box.pack_end(&button1_1, false, false, 0);
-        //     let button1_2 = ToggleButton::with_label("Missing");
-        //     list_box_row_box.pack_end(&button1_2, false, false, 0);
-        //     let button1_3 = ToggleButton::with_label("N/A");
-        //     list_box_row_box.pack_end(&button1_3, false, false, 0);
-        //     let button1_4 = ToggleButton::with_label("None");
-        //     button1_4.set_active(true);
-        //     button1_4.set_sensitive(false);
-        //     list_box_row_box.pack_end(&button1_4, false, false, 0);
-        //     list_box_row.add(&list_box_row_box);
-        //     list_box.add(&list_box_row);
-        //
-        //     list_box_rows.push(list_box_row);
-        // }
-
         let action_bar = ActionBar::new();
 
         let reset = Button::with_label("Reset");
@@ -162,6 +135,44 @@ impl Students {
             set_remaining_missing,
         }
     }
+
+    pub fn populate(&mut self, event: &Event) {
+        // if !self.list_box_rows.is_empty() {
+        //     clear_content(&self.list_box, &mut self.list_box_rows);
+        // }
+
+        // Add new students
+        for student in event.students() {
+            println!("adding student {}", student.get_login());
+            let list_box_row = ListBoxRow::new();
+            let list_box_row_box = Box::new(Orientation::Horizontal, 0);
+
+            let label_student = Label::new(Some(student.get_login()));
+            list_box_row_box.pack_start(&label_student, false, false, 0);
+
+            let button_present = ToggleButton::with_label("Present");
+            list_box_row_box.pack_end(&button_present, false, false, 0);
+
+            let button_missing = ToggleButton::with_label("Missing");
+            list_box_row_box.pack_end(&button_missing, false, false, 0);
+
+            let button_not_applicable = ToggleButton::with_label("N/A");
+            list_box_row_box.pack_end(&button_not_applicable, false, false, 0);
+
+            let button_none = ToggleButton::with_label("None");
+            button_none.set_active(true);
+            button_none.set_sensitive(false);
+            list_box_row_box.pack_end(&button_none, false, false, 0);
+
+            list_box_row.add(&list_box_row_box);
+            self.list_box.add(&list_box_row);
+
+            self.list_box_rows.push(list_box_row);
+        }
+
+        // Display new students
+        self.list_box.show_all();
+    }
 }
 
 pub fn get_events(auth: &RefCell<Auth>, events: &RefCell<Vec<Event>>, content: &RefCell<Content>) {
@@ -169,10 +180,13 @@ pub fn get_events(auth: &RefCell<Auth>, events: &RefCell<Vec<Event>>, content: &
     if let Ok(auth) = auth.try_borrow() {
         if let Ok(mut events) = events.try_borrow_mut() {
             // match list_events_today(&mut events, auth.autologin()) { // TODO: use today and not hardcoded date
-            match list_events(&mut events, auth.autologin(), "2020-02-18") {
+            match list_events(&mut events, auth.autologin(), "2020-06-15") {
                 Ok(_) => {
                     if let Ok(mut content) = content.try_borrow_mut() {
                         content.events.populate(&events);
+                        for event in events.iter() {
+                            content.students.populate(event);
+                        }
                     }
                 }
                 Err(e) => eprintln!("Error while getting events: {}", e),
