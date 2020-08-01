@@ -55,26 +55,6 @@ impl Events {
         let list_box = ListBox::new();
         let list_box_rows: Vec<ListBoxRow> = Vec::new();
 
-        // let mut vec_strings: Vec<String> = Vec::new();
-        // vec_strings
-        //     .push("<b>14:00 - 14:30</b>: B2 - Unix System programming - KickOff - Navy".into());
-        // vec_strings
-        //     .push("<b>14:00 - 14:30</b>: B2 - Unix System programming - Unit Kick-off".into());
-        // vec_strings
-        //     .push("<b>14:30 - 17:30</b>: B2 - Unix System programming - Bootstrap - Navy".into());
-
-        // for event in vec_strings {
-        //     let list_box_row = ListBoxRow::new();
-        //     let list_box_row_box = Box::new(Orientation::Horizontal, 0);
-        //     let label = Label::new(None);
-        //     label.set_markup(event.as_str());
-        //     list_box_row_box.add(&label);
-        //     list_box_row.add(&list_box_row_box);
-        //     list_box.add(&list_box_row);
-        //
-        //     list_box_rows.push(list_box_row);
-        // }
-
         scrolled_window.add(&list_box);
         container.pack_start(&scrolled_window, true, true, 0);
 
@@ -87,13 +67,16 @@ impl Events {
 
     pub fn populate(&mut self, events: &[Event]) {
         if !self.list_box_rows.is_empty() {
-            // TODO: Destroy every gtk element
+            // Destroy every gtk element
+            for list_box_row in &self.list_box_rows {
+                self.list_box.remove(list_box_row);
+            }
 
             // Clear vector
             self.list_box_rows.clear();
         }
 
-        // Add events
+        // Add new events
         for event in events {
             let list_box_row = ListBoxRow::new();
             let list_box_row_box = Box::new(Orientation::Horizontal, 0);
@@ -115,6 +98,7 @@ impl Events {
             self.list_box_rows.push(list_box_row);
         }
 
+        // Display new events
         self.list_box.show_all();
     }
 }
