@@ -107,7 +107,6 @@ impl Events {
                 formatted_module,
                 formatted_title,
             );
-            println!("{}", label_str);
             label.set_markup(label_str.as_str());
             list_box_row_box.add(&label);
             list_box_row.add(&list_box_row_box);
@@ -188,6 +187,7 @@ impl Students {
 }
 
 pub fn get_events(auth: &RefCell<Auth>, events: &RefCell<Vec<Event>>, content: &RefCell<Content>) {
+    println!("Fetching events...");
     if let Ok(auth) = auth.try_borrow() {
         if let Ok(mut events) = events.try_borrow_mut() {
             // match list_events_today(&mut events, auth.autologin()) { // TODO: use today and not hardcoded date
@@ -197,8 +197,9 @@ pub fn get_events(auth: &RefCell<Auth>, events: &RefCell<Vec<Event>>, content: &
                         content.events.populate(&events);
                     }
                 }
-                Err(e) => eprintln!("error while getting events: {}", e),
+                Err(e) => eprintln!("Error while getting events: {}", e),
             }
         }
     }
+    println!("Events fetched");
 }

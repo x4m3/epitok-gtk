@@ -22,6 +22,7 @@ impl App {
             eprintln!("Failed to initialize GTK application");
             std::process::exit(1);
         }
+        println!("GTK ok");
 
         let auth = Rc::new(RefCell::new(Auth::new()));
         let events = Rc::new(RefCell::new(Vec::new()));
@@ -41,6 +42,7 @@ impl App {
     fn try_load_config(auth: &Rc<RefCell<Auth>>) -> Storage {
         // Attempt to load configuration
         // If attempt fails, return an empty configuration
+        println!("Loading configuration");
         let storage = match Storage::load() {
             Ok(new) => new,
             Err(e) => {
@@ -48,15 +50,17 @@ impl App {
                 Storage::new()
             }
         };
+        println!("Configuration loaded");
 
         // Configuration has been loaded
         // Attempt to sign in
+        println!("Attempting to sign in");
         let autologin = storage.autologin.clone();
         if let Some(autologin) = autologin {
             if let Ok(mut auth) = auth.try_borrow_mut() {
                 match auth.sign_in(&autologin) {
-                    Ok(()) => (),
-                    Err(e) => eprintln!("error when signing in: {}", e),
+                    Ok(()) => println!("Signed in"),
+                    Err(e) => eprintln!("Error when signing in: {}", e),
                 }
             }
         };
@@ -83,6 +87,7 @@ impl App {
 
     pub fn start(self) -> Self {
         if let Ok(ui) = self.ui.try_borrow() {
+            println!("Opening window");
             ui.window.show_all();
             gtk::main();
         }
@@ -97,8 +102,10 @@ impl App {
         }
 
         // Save configuration
-        if let Err(e) = self.storage.save() {
-            eprintln!("failed to save configuration: {}", e);
+        println!("Saving configuration");
+        match self.storage.save() {
+            Ok(()) => println!("Configuration saved"),
+            Err(e) => eprintln!("Failed to save configuration: {}", e),
         }
     }
 }

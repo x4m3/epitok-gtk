@@ -26,6 +26,7 @@ impl GtkUi {
 
         // When application is being closed
         window.connect_delete_event(move |_, _| {
+            println!("Closing window");
             gtk::main_quit();
             Inhibit(false)
         });
