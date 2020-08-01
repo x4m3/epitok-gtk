@@ -12,6 +12,7 @@ epitok = { git = "https://github.com/x4m3/epitok" }
 # gui
 gtk = { version = "0.9.0", features = ["v3_24"] }
 glib = "0.10.1"
+html-escape = "0.2.6"
 
 # settings storage
 directories-next = "1.0.1"

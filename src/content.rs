@@ -89,12 +89,14 @@ impl Events {
             let list_box_row = ListBoxRow::new();
             let list_box_row_box = Box::new(Orientation::Horizontal, 0);
             let label = Label::new(None);
+            let formatted_module = html_escape::encode_safe(event.module());
+            let formatted_title = html_escape::encode_safe(event.title());
             let label_str = format!(
                 "<b>{} - {}</b>: {} - {}",
                 event.start(),
                 event.end(),
-                event.module(),
-                event.title()
+                formatted_module,
+                formatted_title,
             );
             println!("{}", label_str);
             label.set_markup(label_str.as_str());
