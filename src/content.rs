@@ -67,13 +67,7 @@ impl Events {
 
     pub fn populate(&mut self, events: &[Event]) {
         if !self.list_box_rows.is_empty() {
-            // Destroy every gtk element
-            for list_box_row in &self.list_box_rows {
-                self.list_box.remove(list_box_row);
-            }
-
-            // Clear vector
-            self.list_box_rows.clear();
+            clear_content(&self.list_box, &mut self.list_box_rows);
         }
 
         // Add new events
@@ -186,4 +180,14 @@ pub fn get_events(auth: &RefCell<Auth>, events: &RefCell<Vec<Event>>, content: &
         }
     }
     println!("Events fetched");
+}
+
+fn clear_content(list_box: &ListBox, list_box_rows: &mut Vec<ListBoxRow>) {
+    // Destroy every gtk element
+    for list_box_row in list_box_rows.iter_mut() {
+        list_box.remove(list_box_row);
+    }
+
+    // Clear vector
+    list_box_rows.clear();
 }
