@@ -8,21 +8,21 @@ use std::cell::RefCell;
 pub struct GtkUi {
     pub window: Window,
     pub header: Header,
-    pub content: Content,
 }
 
 impl GtkUi {
-    pub fn new(auth: &RefCell<Auth>) -> Self {
+    pub fn new(auth: &RefCell<Auth>, content: &RefCell<Content>) -> Self {
         let window = Window::new(WindowType::Toplevel);
         let header = Header::new(auth);
-        let content = Content::new();
 
         window.set_titlebar(Some(&header.container));
         window.set_title(PROGRAM_NAME);
         window.set_default_size(600, 640);
         window.set_icon_name(PROGRAM_ID.into());
 
-        window.add(&content.container);
+        if let Ok(content) = content.try_borrow() {
+            window.add(&content.container);
+        }
 
         // When application is being closed
         window.connect_delete_event(move |_, _| {
@@ -30,10 +30,6 @@ impl GtkUi {
             Inhibit(false)
         });
 
-        Self {
-            window,
-            header,
-            content,
-        }
+        Self { window, header }
     }
 }

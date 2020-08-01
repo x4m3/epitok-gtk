@@ -50,9 +50,9 @@ impl App {
     pub fn connect_refresh_event(&self) {
         let ui = self.ui.clone();
         let ui_header = self.ui.clone();
-        let ui_content = self.ui.clone();
         let auth = self.auth.clone();
         let events = self.events.clone();
+        let content = self.content.clone();
 
         if let Ok(ui) = ui.try_borrow() {
             ui.header.refresh.connect_clicked(move |_| {
@@ -67,8 +67,9 @@ impl App {
                                 Ok(x) => {
                                     println!("success: got {} events", x);
                                     println!("gonna populate");
-                                    // ui.content.events.populate(&events);
-                                    ui_content.borrow_mut().content.events.populate(&events); // FIXME: can't borrow same variable twice at same time (i think)
+                                    if let Ok(mut content) = content.try_borrow_mut() {
+                                        content.events.populate(&events);
+                                    }
                                     println!("populated");
                                 }
                                 Err(e) => eprintln!("error: {}", e),

@@ -1,3 +1,4 @@
+use crate::content::Content;
 use crate::storage::Storage;
 use crate::strings::PROGRAM_NAME;
 use crate::ui::GtkUi;
@@ -10,6 +11,7 @@ pub struct App {
     pub auth: Rc<RefCell<Auth>>,
     pub events: Rc<RefCell<Vec<Event>>>,
     pub storage: Storage,
+    pub content: Rc<RefCell<Content>>,
 }
 
 impl App {
@@ -24,13 +26,15 @@ impl App {
         let auth = Rc::new(RefCell::new(Auth::new()));
         let events = Rc::new(RefCell::new(Vec::new()));
         let storage = Self::try_load_config(&auth);
-        let ui = Rc::new(RefCell::new(GtkUi::new(&auth)));
+        let content = Rc::new(RefCell::new(Content::new()));
+        let ui = Rc::new(RefCell::new(GtkUi::new(&auth, &content)));
 
         Self {
             auth,
             events,
             ui,
             storage,
+            content,
         }
     }
 
