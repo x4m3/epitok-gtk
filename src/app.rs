@@ -6,7 +6,7 @@ use gtk::*;
 use std::{cell::RefCell, rc::Rc};
 
 pub struct App {
-    pub ui: Rc<GtkUi>,
+    pub ui: Rc<RefCell<GtkUi>>,
     pub auth: Rc<RefCell<Auth>>,
     pub events: Rc<RefCell<Vec<Event>>>,
     pub storage: Storage,
@@ -24,7 +24,7 @@ impl App {
         let auth = Rc::new(RefCell::new(Auth::new()));
         let events = Rc::new(RefCell::new(Vec::new()));
         let storage = Self::try_load_config(&auth);
-        let ui = Rc::new(GtkUi::new(&auth));
+        let ui = Rc::new(RefCell::new(GtkUi::new(&auth)));
 
         Self {
             auth,
@@ -69,8 +69,10 @@ impl App {
     }
 
     pub fn start(self) -> Self {
-        self.ui.window.show_all();
-        gtk::main();
+        if let Ok(ui) = self.ui.try_borrow() {
+            ui.window.show_all();
+            gtk::main();
+        }
 
         self
     }

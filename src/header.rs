@@ -1,5 +1,8 @@
 use crate::app::App;
-use epitok::{auth::Auth, event::list_events_today};
+use epitok::{
+    auth::Auth,
+    event::{list_events, list_events_today},
+};
 use gtk::*;
 use std::cell::RefCell;
 
@@ -46,24 +49,37 @@ impl Header {
 impl App {
     pub fn connect_refresh_event(&self) {
         let ui = self.ui.clone();
+        let ui_header = self.ui.clone();
+        let ui_content = self.ui.clone();
         let auth = self.auth.clone();
         let events = self.events.clone();
 
-        self.ui.header.refresh.connect_clicked(move |_| {
-            ui.header.refresh.set_sensitive(false);
-            ui.header.spinner.start();
+        if let Ok(ui) = ui.try_borrow() {
+            ui.header.refresh.connect_clicked(move |_| {
+                if let Ok(ui) = ui_header.try_borrow() {
+                    ui.header.refresh.set_sensitive(false);
+                    ui.header.spinner.start();
 
-            if let Ok(auth) = auth.try_borrow() {
-                if let Ok(mut events) = events.try_borrow_mut() {
-                    match list_events_today(&mut events, auth.autologin()) {
-                        Ok(x) => println!("success: got {} events", x),
-                        Err(e) => eprintln!("error: {}", e),
+                    if let Ok(auth) = auth.try_borrow() {
+                        if let Ok(mut events) = events.try_borrow_mut() {
+                            // match list_events_today(&mut events, auth.autologin()) { // TODO: use today and not hardcoded date
+                            match list_events(&mut events, auth.autologin(), "2020-02-18") {
+                                Ok(x) => {
+                                    println!("success: got {} events", x);
+                                    println!("gonna populate");
+                                    // ui.content.events.populate(&events);
+                                    ui_content.borrow_mut().content.events.populate(&events); // FIXME: can't borrow same variable twice at same time (i think)
+                                    println!("populated");
+                                }
+                                Err(e) => eprintln!("error: {}", e),
+                            }
+                        }
                     }
-                }
-            }
 
-            ui.header.spinner.stop();
-            ui.header.refresh.set_sensitive(true);
-        });
+                    ui.header.spinner.stop();
+                    ui.header.refresh.set_sensitive(true);
+                }
+            });
+        };
     }
 }

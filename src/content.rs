@@ -1,3 +1,4 @@
+use epitok::event::Event;
 use gtk::*;
 
 pub struct Content {
@@ -8,11 +9,13 @@ pub struct Content {
 
 pub struct Events {
     pub container: Box,
+    pub list_box: ListBox,
     pub list_box_rows: Vec<ListBoxRow>,
 }
 
 pub struct Students {
     pub container: Box,
+    pub list_box: ListBox,
     pub list_box_rows: Vec<ListBoxRow>,
     pub action_bar: ActionBar,
     pub start_scan: Button,
@@ -46,35 +49,60 @@ impl Events {
         let container = Box::new(Orientation::Vertical, 0);
         let scrolled_window = ScrolledWindow::new::<Adjustment, Adjustment>(None, None);
         let list_box = ListBox::new();
+        let list_box_rows: Vec<ListBoxRow> = Vec::new();
 
-        let mut vec_strings: Vec<String> = Vec::new();
-        vec_strings
-            .push("<b>14:00 - 14:30</b>: B2 - Unix System programming - KickOff - Navy".into());
-        vec_strings
-            .push("<b>14:00 - 14:30</b>: B2 - Unix System programming - Unit Kick-off".into());
-        vec_strings
-            .push("<b>14:30 - 17:30</b>: B2 - Unix System programming - Bootstrap - Navy".into());
+        // let mut vec_strings: Vec<String> = Vec::new();
+        // vec_strings
+        //     .push("<b>14:00 - 14:30</b>: B2 - Unix System programming - KickOff - Navy".into());
+        // vec_strings
+        //     .push("<b>14:00 - 14:30</b>: B2 - Unix System programming - Unit Kick-off".into());
+        // vec_strings
+        //     .push("<b>14:30 - 17:30</b>: B2 - Unix System programming - Bootstrap - Navy".into());
 
-        let mut list_box_rows: Vec<ListBoxRow> = Vec::new();
-
-        for event in vec_strings {
-            let list_box_row = ListBoxRow::new();
-            let list_box_row_box = Box::new(Orientation::Horizontal, 0);
-            let label = Label::new(None);
-            label.set_markup(event.as_str());
-            list_box_row_box.add(&label);
-            list_box_row.add(&list_box_row_box);
-            list_box.add(&list_box_row);
-
-            list_box_rows.push(list_box_row);
-        }
+        // for event in vec_strings {
+        //     let list_box_row = ListBoxRow::new();
+        //     let list_box_row_box = Box::new(Orientation::Horizontal, 0);
+        //     let label = Label::new(None);
+        //     label.set_markup(event.as_str());
+        //     list_box_row_box.add(&label);
+        //     list_box_row.add(&list_box_row_box);
+        //     list_box.add(&list_box_row);
+        //
+        //     list_box_rows.push(list_box_row);
+        // }
 
         scrolled_window.add(&list_box);
         container.pack_start(&scrolled_window, true, true, 0);
 
         Self {
             container,
+            list_box,
             list_box_rows,
+        }
+    }
+
+    pub fn populate(&mut self, events: &[Event]) {
+        // TODO: if there is contents, destroy every gtk element and empty vectors
+
+        // Add events
+        for event in events {
+            let list_box_row = ListBoxRow::new();
+            let list_box_row_box = Box::new(Orientation::Horizontal, 0);
+            let label = Label::new(None);
+            let label_str = format!(
+                "<b>{} - {}</b>: {} - {}",
+                event.start(),
+                event.end(),
+                event.module(),
+                event.title()
+            );
+            println!("{}", label_str);
+            label.set_markup(label_str.as_str());
+            list_box_row_box.add(&label);
+            list_box_row.add(&list_box_row_box);
+            self.list_box.add(&list_box_row);
+
+            self.list_box_rows.push(list_box_row);
         }
     }
 }
@@ -84,35 +112,34 @@ impl Students {
         let container = Box::new(Orientation::Vertical, 0);
         let scrolled_window = ScrolledWindow::new::<Adjustment, Adjustment>(None, None);
         let list_box = ListBox::new();
+        let list_box_rows: Vec<ListBoxRow> = Vec::new();
 
-        let mut vec_strings: Vec<String> = Vec::new();
-        vec_strings.push("philippe.loctaux@epitech.eu".into());
-        vec_strings.push("theo.boscher@epitech.eu".into());
-        vec_strings.push("francois.lelay@epitech.eu".into());
-        vec_strings.push("alexandre1.wagner@epitech.eu".into());
-
-        let mut list_box_rows: Vec<ListBoxRow> = Vec::new();
-
-        for student in vec_strings {
-            let list_box_row = ListBoxRow::new();
-            let list_box_row_box = Box::new(Orientation::Horizontal, 0);
-            let label_student = Label::new(Some(student.as_str()));
-            list_box_row_box.pack_start(&label_student, false, false, 0);
-            let button1_1 = ToggleButton::with_label("Present");
-            list_box_row_box.pack_end(&button1_1, false, false, 0);
-            let button1_2 = ToggleButton::with_label("Missing");
-            list_box_row_box.pack_end(&button1_2, false, false, 0);
-            let button1_3 = ToggleButton::with_label("N/A");
-            list_box_row_box.pack_end(&button1_3, false, false, 0);
-            let button1_4 = ToggleButton::with_label("None");
-            button1_4.set_active(true);
-            button1_4.set_sensitive(false);
-            list_box_row_box.pack_end(&button1_4, false, false, 0);
-            list_box_row.add(&list_box_row_box);
-            list_box.add(&list_box_row);
-
-            list_box_rows.push(list_box_row);
-        }
+        // let mut vec_strings: Vec<String> = Vec::new();
+        // vec_strings.push("philippe.loctaux@epitech.eu".into());
+        // vec_strings.push("theo.boscher@epitech.eu".into());
+        // vec_strings.push("francois.lelay@epitech.eu".into());
+        // vec_strings.push("alexandre1.wagner@epitech.eu".into());
+        //
+        // for student in vec_strings {
+        //     let list_box_row = ListBoxRow::new();
+        //     let list_box_row_box = Box::new(Orientation::Horizontal, 0);
+        //     let label_student = Label::new(Some(student.as_str()));
+        //     list_box_row_box.pack_start(&label_student, false, false, 0);
+        //     let button1_1 = ToggleButton::with_label("Present");
+        //     list_box_row_box.pack_end(&button1_1, false, false, 0);
+        //     let button1_2 = ToggleButton::with_label("Missing");
+        //     list_box_row_box.pack_end(&button1_2, false, false, 0);
+        //     let button1_3 = ToggleButton::with_label("N/A");
+        //     list_box_row_box.pack_end(&button1_3, false, false, 0);
+        //     let button1_4 = ToggleButton::with_label("None");
+        //     button1_4.set_active(true);
+        //     button1_4.set_sensitive(false);
+        //     list_box_row_box.pack_end(&button1_4, false, false, 0);
+        //     list_box_row.add(&list_box_row_box);
+        //     list_box.add(&list_box_row);
+        //
+        //     list_box_rows.push(list_box_row);
+        // }
 
         let action_bar = ActionBar::new();
 
@@ -136,6 +163,7 @@ impl Students {
 
         Self {
             container,
+            list_box,
             list_box_rows,
             action_bar,
             start_scan,

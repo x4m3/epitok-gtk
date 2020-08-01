@@ -91,43 +91,46 @@ fn sign_out(
 impl App {
     pub fn connect_show_settings(&self) {
         let auth = self.auth.clone();
-        let header_container = self.ui.header.container.clone();
-        let parent_window = self.ui.window.clone();
+        let ui = self.ui.clone();
 
-        self.ui.header.settings.connect_clicked(move |_| {
-            let window = Window::new(WindowType::Toplevel);
-            window.set_title("Settings");
-            window.set_default_size(525, 300);
-            window.set_transient_for(Some(&parent_window)); // Set which window is the parent
-            window.set_position(WindowPosition::CenterOnParent); // Settings window will open in center of main window
-            // window.set_modal(true); // Can't interact with parent window
-            window.set_destroy_with_parent(true); // Destroy window if main window is destroyed
+        if let Ok(ui) = ui.try_borrow() {
+            let header_container = ui.header.container.clone();
+            let parent_window = ui.window.clone();
 
-            let container = Box::new(Orientation::Vertical, 0);
-            let status = create_status_label(auth.clone());
-            let action = create_action_button(auth.clone());
+            ui.header.settings.connect_clicked(move |_| {
+                let window = Window::new(WindowType::Toplevel);
+                window.set_title("Settings");
+                window.set_default_size(525, 300);
+                window.set_transient_for(Some(&parent_window)); // Set which window is the parent
+                window.set_position(WindowPosition::CenterOnParent); // Settings window will open in center of main window
+                // window.set_modal(true); // Can't interact with parent window
+                window.set_destroy_with_parent(true); // Destroy window if main window is destroyed
 
-            let input = Entry::new();
-            input.set_alignment(0.5); // Center content
+                let container = Box::new(Orientation::Vertical, 0);
+                let status = create_status_label(auth.clone());
+                let action = create_action_button(auth.clone());
 
-            let account = Label::new(None);
-            account.set_markup("<span size=\"large\">Account</span>");
+                let input = Entry::new();
+                input.set_alignment(0.5); // Center content
 
-            container.pack_start(&account, true, false, 10);
-            container.pack_start(&status, true, false, 0);
-            container.pack_start(&input, true, false, 0);
-            container.pack_end(&action, true, false, 10);
+                let account = Label::new(None);
+                account.set_markup("<span size=\"large\">Account</span>");
 
-            window.add(&container);
-            window.show_all();
+                container.pack_start(&account, true, false, 10);
+                container.pack_start(&status, true, false, 0);
+                container.pack_start(&input, true, false, 0);
+                container.pack_end(&action, true, false, 10);
 
-            // If we are already signed in don't show entry
-            if let Ok(auth) = auth.try_borrow() {
-                if let Status::SignedIn = auth.status() { input.hide() }
-            }
+                window.add(&container);
+                window.show_all();
 
-            // When action button is clicked
-            action.connect_clicked(clone!(@weak action, @weak auth, @weak header_container => move |_| {
+                // If we are already signed in don't show entry
+                if let Ok(auth) = auth.try_borrow() {
+                    if let Status::SignedIn = auth.status() { input.hide() }
+                }
+
+                // When action button is clicked
+                action.connect_clicked(clone!(@weak action, @weak auth, @weak header_container => move |_| {
                 if let Ok(auth) = auth.try_borrow_mut() {
                     match auth.status() {
                         Status::SignedIn => sign_out(action, auth, status.clone(), input.clone(), header_container),
@@ -135,6 +138,7 @@ impl App {
                     }
                 };
             }));
-        });
+            });
+        };
     }
 }
