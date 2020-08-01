@@ -72,6 +72,15 @@ impl App {
         self
     }
 
+    pub fn try_get_events(self) -> Self {
+        let auth = self.auth.clone();
+        let events = self.events.clone();
+        let content = self.content.clone();
+        crate::content::get_events(&auth, &events, &content);
+
+        self
+    }
+
     pub fn start(self) -> Self {
         if let Ok(ui) = self.ui.try_borrow() {
             ui.window.show_all();
