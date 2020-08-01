@@ -1,5 +1,9 @@
-use epitok::event::Event;
+use epitok::{
+    auth::Auth,
+    event::{list_events, list_events_today, Event},
+};
 use gtk::*;
+use std::cell::RefCell;
 
 pub struct Content {
     pub container: Box,
@@ -82,7 +86,12 @@ impl Events {
     }
 
     pub fn populate(&mut self, events: &[Event]) {
-        // TODO: if there is contents, destroy every gtk element and empty vectors
+        if !self.list_box_rows.is_empty() {
+            // TODO: Destroy every gtk element
+
+            // Clear vector
+            self.list_box_rows.clear();
+        }
 
         // Add events
         for event in events {
@@ -106,6 +115,8 @@ impl Events {
 
             self.list_box_rows.push(list_box_row);
         }
+
+        self.list_box.show_all();
     }
 }
 
@@ -172,6 +183,22 @@ impl Students {
             save,
             reset,
             set_remaining_missing,
+        }
+    }
+}
+
+pub fn get_events(auth: &RefCell<Auth>, events: &RefCell<Vec<Event>>, content: &RefCell<Content>) {
+    if let Ok(auth) = auth.try_borrow() {
+        if let Ok(mut events) = events.try_borrow_mut() {
+            // match list_events_today(&mut events, auth.autologin()) { // TODO: use today and not hardcoded date
+            match list_events(&mut events, auth.autologin(), "2020-02-18") {
+                Ok(_) => {
+                    if let Ok(mut content) = content.try_borrow_mut() {
+                        content.events.populate(&events);
+                    }
+                }
+                Err(e) => eprintln!("error while getting events: {}", e),
+            }
         }
     }
 }

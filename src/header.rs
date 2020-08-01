@@ -1,8 +1,5 @@
 use crate::app::App;
-use epitok::{
-    auth::Auth,
-    event::{list_events, list_events_today},
-};
+use epitok::auth::Auth;
 use gtk::*;
 use std::cell::RefCell;
 
@@ -60,22 +57,7 @@ impl App {
                     ui.header.refresh.set_sensitive(false);
                     ui.header.spinner.start();
 
-                    if let Ok(auth) = auth.try_borrow() {
-                        if let Ok(mut events) = events.try_borrow_mut() {
-                            // match list_events_today(&mut events, auth.autologin()) { // TODO: use today and not hardcoded date
-                            match list_events(&mut events, auth.autologin(), "2020-02-18") {
-                                Ok(x) => {
-                                    println!("success: got {} events", x);
-                                    println!("gonna populate");
-                                    if let Ok(mut content) = content.try_borrow_mut() {
-                                        content.events.populate(&events);
-                                    }
-                                    println!("populated");
-                                }
-                                Err(e) => eprintln!("error: {}", e),
-                            }
-                        }
-                    }
+                    crate::content::get_events(&auth, &events, &content);
 
                     ui.header.spinner.stop();
                     ui.header.refresh.set_sensitive(true);
