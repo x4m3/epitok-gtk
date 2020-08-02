@@ -1,6 +1,6 @@
 use epitok::{
     auth::Auth,
-    event::{list_events, list_events_today, Event},
+    event::{list_events, Event},
     student::Presence,
 };
 use gtk::*;
