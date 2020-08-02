@@ -46,6 +46,17 @@ impl Content {
             students,
         }
     }
+
+    pub fn populate(&mut self, events: &[Event]) {
+        // Clean events and students
+        clear_content(&self.events.list_box, &mut self.events.list_box_rows);
+        clear_content(&self.students.list_box, &mut self.students.list_box_rows);
+
+        self.events.populate(&events);
+        for event in events.iter() {
+            self.students.populate(event);
+        }
+    }
 }
 
 impl Events {
@@ -66,10 +77,6 @@ impl Events {
     }
 
     pub fn populate(&mut self, events: &[Event]) {
-        if !self.list_box_rows.is_empty() {
-            clear_content(&self.list_box, &mut self.list_box_rows);
-        }
-
         // Add new events
         for event in events {
             let list_box_row = ListBoxRow::new();
@@ -143,7 +150,6 @@ impl Students {
 
         // Add new students
         for student in event.students() {
-            println!("adding student {}", student.get_login());
             let list_box_row = ListBoxRow::new();
             let list_box_row_box = Box::new(Orientation::Horizontal, 0);
 
@@ -183,10 +189,7 @@ pub fn get_events(auth: &RefCell<Auth>, events: &RefCell<Vec<Event>>, content: &
             match list_events(&mut events, auth.autologin(), "2020-06-15") {
                 Ok(_) => {
                     if let Ok(mut content) = content.try_borrow_mut() {
-                        content.events.populate(&events);
-                        for event in events.iter() {
-                            content.students.populate(event);
-                        }
+                        content.populate(&events);
                     }
                 }
                 Err(e) => eprintln!("Error while getting events: {}", e),
