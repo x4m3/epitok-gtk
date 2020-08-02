@@ -1,6 +1,7 @@
 use epitok::{
     auth::Auth,
     event::{list_events, list_events_today, Event},
+    student::Presence,
 };
 use gtk::*;
 use std::cell::RefCell;
@@ -47,13 +48,13 @@ impl Content {
         }
     }
 
-    pub fn populate(&mut self, events: &[Event]) {
+    pub fn populate(&mut self, events: &mut [Event]) {
         // Clean events and students
         clear_content(&self.events.list_box, &mut self.events.list_box_rows);
         clear_content(&self.students.list_box, &mut self.students.list_box_rows);
 
         self.events.populate(&events);
-        for event in events.iter() {
+        for event in events.iter_mut() {
             self.students.populate(event);
         }
     }
@@ -143,11 +144,7 @@ impl Students {
         }
     }
 
-    pub fn populate(&mut self, event: &Event) {
-        // if !self.list_box_rows.is_empty() {
-        //     clear_content(&self.list_box, &mut self.list_box_rows);
-        // }
-
+    pub fn populate(&mut self, event: &mut Event) {
         // Add new students
         for student in event.students() {
             let list_box_row = ListBoxRow::new();
@@ -166,9 +163,26 @@ impl Students {
             list_box_row_box.pack_end(&button_not_applicable, false, false, 0);
 
             let button_none = ToggleButton::with_label("None");
-            button_none.set_active(true);
-            button_none.set_sensitive(false);
             list_box_row_box.pack_end(&button_none, false, false, 0);
+
+            // If student is set as `failed`, set it as `missing`
+            // I don't want to have a `failed` button since it should be in use
+            // But just in case
+            if let Presence::Failed = student.get_presence() {
+                student.set_presence(Presence::Missing);
+            }
+
+            // Mark current status button as locked
+            // aka you can't select it again
+            let current_status = match student.get_presence() {
+                Presence::Present => button_present,
+                Presence::Missing => button_missing,
+                Presence::NotApplicable => button_not_applicable,
+                Presence::None => button_none,
+                Presence::Failed => button_missing,
+            };
+            current_status.set_active(true);
+            current_status.set_sensitive(false);
 
             list_box_row.add(&list_box_row_box);
             self.list_box.add(&list_box_row);
@@ -189,7 +203,7 @@ pub fn get_events(auth: &RefCell<Auth>, events: &RefCell<Vec<Event>>, content: &
             match list_events(&mut events, auth.autologin(), "2020-06-15") {
                 Ok(_) => {
                     if let Ok(mut content) = content.try_borrow_mut() {
-                        content.populate(&events);
+                        content.populate(&mut events);
                     }
                 }
                 Err(e) => eprintln!("Error while getting events: {}", e),
