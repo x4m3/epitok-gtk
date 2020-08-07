@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 # epitok
-epitok = { git = "https://github.com/x4m3/epitok" }
+epitok = { git = "https://github.com/x4m3/epitok", branch = "synchronous" }
 #epitok = { path = "../epitok" }
 
 # gui
